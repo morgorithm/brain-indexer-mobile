@@ -1,0 +1,37 @@
+{
+    "name": "webpack-cordova",
+    "version": "1.0.0",
+    "description": "Boilterplates for Mobile application supporting crossplatform with Cordova",
+    "main": "index.js",
+    "author": "Jay Lee <jaylee.possible@gmail.com>",
+    "license": "MIT",
+    "scripts": {
+        "initiate": "node ./scripts/init-project.js",
+        "serve": "webpack serve --config webpack.config.dev.js",
+        "build": "webpack",
+        "build:dev": "webpack --config webpack.config.dev.js",
+        "emulate:android": "cd brainIndexer && cordova run android",
+        "clean": "rm -rf ./brainIndexer/www/*"
+    },
+    "devDependencies": {
+        "chalk": "^4.1.0",
+        "cordova": "^10.0.0",
+        "css-loader": "^5.0.0",
+        "html-webpack-plugin": "^4.5.0",
+        "inquirer": "^7.3.3",
+        "node-sass": "^4.14.1",
+        "rimraf": "^3.0.2",
+        "style-loader": "^2.0.0",
+        "ts-loader": "^8.0.7",
+        "ts-node": "^9.0.0",
+        "typescript": "^4.0.5",
+        "webpack": "^5.3.0",
+        "webpack-cli": "^4.1.0",
+        "webpack-dev-server": "^3.11.0"
+    },
+    "applicationName": "brainIndexer",
+    "dependencies": {
+        "@material/mwc-icon": "^0.19.1",
+        "lit-element": "^2.4.0"
+    }
+}
