@@ -1,27 +1,36 @@
-import '../components/editable-table'
+import '../components/simple-data-table'
 
-import { Field, FieldTypes } from '../components/editable-table'
-import { TemplateResult, customElement, html, property } from 'lit-element'
+import { CSSResult, TemplateResult, css, customElement, html, property } from 'lit-element'
 
 import { Page } from './page'
 
 @customElement('page-home')
 export class PageHome extends Page {
-  @property({ type: Array }) fields: Field[] = [
+  @property({ type: Array }) fields: string[] = ['category', 'qty']
+  @property({ type: Array }) data: Record<string, any>[] = [
     {
-      name: 'Category',
-      type: FieldTypes.text,
-    },
-    {
-      name: 'qty',
-      type: FieldTypes.number,
+      category: 'Computer Science',
+      qty: 10,
     },
   ]
 
-  @property({ type: Array }) data: Record<string, any>[] = []
+  static get styles(): CSSResult[] {
+    return [
+      css`
+        :host {
+          flex: 1;
+          display: flex;
+          overflow: auto;
+        }
+      `,
+    ]
+  }
 
   render(): TemplateResult {
-    return html` <editable-table .fields="${this.fields}" .data="${this.data}"></editable-table> `
+    const fields: string[] = this.fields || []
+    const data: Record<string, any>[] = this.data || []
+
+    return html`<simple-data-table .fields="${fields}" .data="${data}" selectable editable></simple-data-table>`
   }
 
   constructor() {

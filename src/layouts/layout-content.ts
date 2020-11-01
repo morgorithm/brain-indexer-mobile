@@ -14,9 +14,10 @@ export class LayoutContent extends LitElement {
       commonStyle,
       css`
         :host {
-          margin: 0 15px;
+          margin: 5px;
           display: flex;
           flex-direction: column;
+          overflow: hidden;
         }
       `,
     ]

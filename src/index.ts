@@ -22,8 +22,8 @@ export class BrainIndexer extends LitElement {
           flex: 1;
           display: flex;
           flex-direction: column;
-
           background-color: var(--theme-dark-color);
+          overflow: hidden;
         }
         layout-content {
           flex: 1;

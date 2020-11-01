@@ -27,7 +27,7 @@ export class Page extends LitElement implements PageInfo {
   }
 
   showPage(): void {
-    this.style.display = 'initial'
+    this.style.display = 'flex'
   }
 
   hidePage(): void {
