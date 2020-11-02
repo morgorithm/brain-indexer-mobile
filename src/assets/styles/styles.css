@@ -8,11 +8,12 @@ body {
   margin: 0;
 
   /* theme */
-  --theme-primary-color: #D7FFF1;
+  --theme-primary-color: #d7e5ff;
   --theme-light-color: #8CD790;
   --theme-dark-color:#77AF9C;
   --theme-darker-color: #285943;
 
+  --theme-positive-color: #4378db
 }
 
 

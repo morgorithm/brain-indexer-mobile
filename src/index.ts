@@ -4,15 +4,17 @@ import './layouts'
 import './pages'
 
 import { CSSResult, LitElement, TemplateResult, css, customElement, html, property } from 'lit-element'
+import { DATABASE, Menus } from './constants'
+import { IndexedDB, Router } from './utils'
 
-import { Menus } from './constants'
-import { Router } from './utils/router'
 import { SideMenus } from './components/side-menus'
 import { commonStyle } from './assets/styles/common-style'
+import { schemas } from './schemas'
 
 @customElement('brain-indexer')
 export class BrainIndexer extends LitElement {
   @property({ type: Object }) router: Router = new Router()
+  @property({ type: Object }) indexedDB: IndexedDB = new IndexedDB(DATABASE.name, schemas, DATABASE.version)
 
   static get styles(): CSSResult[] {
     return [
@@ -41,11 +43,17 @@ export class BrainIndexer extends LitElement {
       <layout-content>
         <page-home></page-home>
         <page-cards></page-cards>
+        <page-categories></page-categories>
         <page-404></page-404>
       </layout-content>
 
       <layout-footer></layout-footer>
     `
+  }
+
+  constructor() {
+    super()
+    this.indexedDB.createDatabase()
   }
 
   onMenuIconClick(): void {

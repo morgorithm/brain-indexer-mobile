@@ -20,12 +20,12 @@ export class SimpleDataTable extends LitElement {
           display: flex;
           flex-direction: column;
           flex: 1;
-          background-color: var(--theme-darker-color);
-          border-radius: 5px;
-          padding: 5px;
           overflow: auto;
         }
         table {
+          border-radius: 5px;
+          padding: 5px;
+          background-color: var(--theme-darker-color);
           border-spacing: unset;
           color: white;
         }

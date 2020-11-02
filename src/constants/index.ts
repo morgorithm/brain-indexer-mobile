@@ -24,3 +24,8 @@ export const Menus: Menu[] = [
     route: 'settings',
   },
 ]
+
+export const DATABASE: Record<string, any> = {
+  name: 'brain-indexer-database',
+  version: 1,
+}
