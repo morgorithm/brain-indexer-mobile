@@ -23,6 +23,10 @@ export class LayoutContent extends LitElement {
     ]
   }
 
+  render(): TemplateResult {
+    return html`<main><slot></slot></main>`
+  }
+
   constructor() {
     super()
     document.addEventListener('after-navigate', this.onAfterNavigate.bind(this))
@@ -34,10 +38,6 @@ export class LayoutContent extends LitElement {
 
   get page404(): Page | undefined {
     return this.pages.find((page: Page) => page.isFallbackPage)
-  }
-
-  render(): TemplateResult {
-    return html`<slot></slot>`
   }
 
   onAfterNavigate(e: Event): void {

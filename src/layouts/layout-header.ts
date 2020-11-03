@@ -12,12 +12,12 @@ export class LayoutHeader extends LitElement {
     return [
       commonStyle,
       css`
-        .header {
+        header {
           display: grid;
           grid-template-columns: 10vw 1fr 10vw;
           border-bottom: 1px solid var(--theme-darker-color);
         }
-        .header > div {
+        header > div {
           display: flex;
           margin: auto;
           color: white;
@@ -40,7 +40,7 @@ export class LayoutHeader extends LitElement {
 
   render(): TemplateResult {
     return html`
-      <div class="header">
+      <header>
         <div
           class="left edge"
           @click="${() => {
@@ -55,7 +55,7 @@ export class LayoutHeader extends LitElement {
         </div>
 
         <div class="right edge"></div>
-      </div>
+      </header>
     `
   }
 

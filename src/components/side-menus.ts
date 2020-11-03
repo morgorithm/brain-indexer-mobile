@@ -31,7 +31,7 @@ export class SideMenus extends LitElement {
           display: block;
           z-index: 1;
         }
-        #menus {
+        nav {
           position: relative;
           left: -100vw;
           background-color: var(--theme-light-color);
@@ -42,7 +42,7 @@ export class SideMenus extends LitElement {
           display: flex;
           flex-direction: column;
         }
-        #menus[opened] {
+        nav[opened] {
           left: 0;
         }
         .menu-title {
@@ -90,7 +90,7 @@ export class SideMenus extends LitElement {
     return html`
       <div id="modal" ?opened="${this.opened}" @click="${this.close}"></div>
 
-      <div id="menus" ?opened="${this.opened}">
+      <nav ?opened="${this.opened}">
         <h2 class="menu-title">Branin Indexer</h2>
         <div class="menu-container">
           ${this.menus.map(
@@ -109,7 +109,7 @@ export class SideMenus extends LitElement {
         <div class="mailto">
           <a href="mailto:jaylee.possible@gmail.com"><mwc-icon>email</mwc-icon></a>
         </div>
-      </div>
+      </nav>
     `
   }
 
