@@ -8,12 +8,20 @@ body {
   margin: 0;
 
   /* theme */
+  /* color */
   --theme-primary-color: #d7e5ff;
   --theme-light-color: #8CD790;
   --theme-dark-color:#77AF9C;
   --theme-darker-color: #285943;
 
-  --theme-positive-color: #4378db
+  --theme-positive-color: #4378db;
+
+  /* spacing */
+  --theme-common-padding: 5px;
+  --theme-common-margin: 5px;
+
+  /* radius */
+  --theme-common-radius: 5px;
 }
 
 

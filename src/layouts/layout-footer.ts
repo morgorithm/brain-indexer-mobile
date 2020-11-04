@@ -28,7 +28,7 @@ export interface FooterButton {
   icon?: string
   type: ButtonTypes
   action: () => void
-  option: FooterButtonOption
+  option?: FooterButtonOption
 }
 
 export interface FooterMessage {

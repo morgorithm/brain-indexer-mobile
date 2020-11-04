@@ -10,8 +10,8 @@ export const commonStyle: CSSResult = css`
   button {
     display: flex;
     border: none;
-    border-radius: 5px;
-    padding: 5px;
+    border-radius: var(--theme-common-radius, 5px);
+    padding: var(--theme-common-padding, 5px);
     box-shadow: 1px 1px rgba(0, 0, 0, 0.5);
     outline: none;
   }

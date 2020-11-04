@@ -1,4 +1,5 @@
 import { TemplateResult, customElement, html, property } from 'lit-element'
+import { ButtonTypes, FooterButton, FooterButtonContent, FooterTypes } from '../layouts/layout-footer'
 
 import { Page } from './page'
 
@@ -11,6 +12,18 @@ export class PageCategories extends Page {
       qty: 10,
     },
   ]
+
+  @property({ type: Object }) footerContent: FooterButtonContent = {
+    type: FooterTypes.Button,
+    buttons: [
+      {
+        icon: 'add',
+        name: 'add',
+        type: ButtonTypes.Positive,
+        action: () => console.log('add'),
+      },
+    ],
+  }
 
   render(): TemplateResult {
     const fields: string[] = this.fields || []

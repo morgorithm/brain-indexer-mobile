@@ -23,8 +23,8 @@ export class SimpleDataTable extends LitElement {
           overflow: auto;
         }
         table {
-          border-radius: 5px;
-          padding: 5px;
+          border-radius: var(--theme-common-radius, 5px);
+          padding: var(--theme-common-padding, 5px);
           background-color: var(--theme-darker-color);
           border-spacing: unset;
           color: white;
@@ -43,7 +43,7 @@ export class SimpleDataTable extends LitElement {
         }
         th,
         td {
-          padding: 5px 0;
+          padding: var(--theme-common-padding, 5px) 0;
         }
         .index {
           width: 10px;
