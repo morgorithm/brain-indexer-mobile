@@ -41,10 +41,41 @@ export const commonStyle: CSSResult = css`
   button.neutral {
     background-color: var(--theme-neutral-color);
   }
-
   button > mwc-icon,
   button:active > mwc-icon {
     margin: auto;
     font-size: medium;
+  }
+  button:active > mwc-icon {
+    color: gray;
+  }
+  form {
+    flex: 1;
+  }
+  fieldset {
+    border: none;
+  }
+  .popup-title {
+    text-align: center;
+    color: var(--theme-darker-color);
+    font-weight: bold;
+    padding: var(--theme-wide-spacing, 10px);
+    border-bottom: 1px solid var(--theme-darker-color);
+  }
+  label {
+    color: var(--theme-darker-color);
+    text-transform: capitalize;
+    display: flex;
+  }
+  label > input {
+    flex: 1;
+    margin-left: var(--theme-common-spacing, 5px);
+  }
+  input {
+    border: none;
+    border-bottom: 1px solid var(--theme-darker-color);
+    background-color: transparent;
+    color: var(--theme-darker-color);
+    outline: none;
   }
 `

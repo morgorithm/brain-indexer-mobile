@@ -1,4 +1,5 @@
-import { LitElement, TemplateResult, customElement, html, property, css, CSSResult } from 'lit-element'
+import { CSSResult, LitElement, TemplateResult, css, customElement, html, property } from 'lit-element'
+
 import { commonStyle } from '../assets/styles/common-style'
 
 export const enum FooterTypes {
@@ -28,7 +29,7 @@ export interface FooterButton {
   name?: string
   icon?: string
   type: ButtonTypes
-  action: () => void
+  action?: () => void
   option?: FooterButtonOption
 }
 

@@ -1,11 +1,25 @@
-import { TemplateResult, customElement, html, property } from 'lit-element'
+import '../components/form-popup'
+
 import { ButtonTypes, FooterButton, FooterButtonContent, FooterTypes } from '../layouts/layout-footer'
+import { FieldTypes, FormField, FormPopup, PopupOption } from '../components/form-popup'
+import { TemplateResult, customElement, html, property } from 'lit-element'
 
 import { Page } from './page'
 
 @customElement('page-categories')
 export class PageCategories extends Page {
   @property({ type: Array }) fields: string[] = ['category', 'qty']
+  @property({ type: Array }) formFields: FormField[] = [
+    {
+      name: 'category',
+      option: {
+        type: FieldTypes.Text,
+      },
+    },
+  ]
+  @property({ type: Object }) popupOption: PopupOption = {
+    title: 'Add Category',
+  }
   @property({ type: Array }) data: Record<string, any>[] = [
     {
       category: 'Computer Science',
@@ -18,33 +32,27 @@ export class PageCategories extends Page {
     buttons: [
       {
         icon: 'add',
-        name: 'add',
         type: ButtonTypes.Positive,
-        action: () => console.log('add'),
-      },
-      {
-        icon: 'settings',
-        name: 'setting',
-        type: ButtonTypes.Negative,
-        action: () => console.log('setting'),
-      },
-      {
-        icon: 'settings',
-        name: 'setting',
-        type: ButtonTypes.Neutral,
-        action: () => console.log('setting'),
+        action: this.popup?.toggle,
       },
     ],
   }
 
   render(): TemplateResult {
     const fields: string[] = this.fields || []
+    const formFields: FormField[] = this.formFields || []
+    const popupOption: PopupOption = this.popupOption || {}
     const data: Record<string, any>[] = this.data || []
 
-    return html`<simple-data-table .fields="${fields}" .data="${data}" appendable></simple-data-table>`
+    return html`<simple-data-table .fields="${fields}" .data="${data}" appendable></simple-data-table>
+      <form-popup .fields="${formFields}" .popupOption="${popupOption}"></form-popup>`
   }
 
   constructor() {
     super('Categories', 'categories')
+  }
+
+  get popup(): FormPopup | null {
+    return this.renderRoot?.querySelector('form-popup')
   }
 }

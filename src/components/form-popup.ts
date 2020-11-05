@@ -1,4 +1,6 @@
-import { css, CSSResult, html, LitElement, property, TemplateResult } from 'lit-element'
+import { CSSResult, LitElement, TemplateResult, css, customElement, html, property } from 'lit-element'
+
+import { FooterButtonContent } from '../layouts/layout-footer'
 import { commonStyle } from '../assets/styles/common-style'
 
 export enum FieldTypes {
@@ -47,26 +49,60 @@ export interface PopupOption {
   movable?: boolean
 }
 
+@customElement('form-popup')
 export class FormPopup extends LitElement {
-  @property({ type: Array }) fields: FormField[]
+  @property({ type: Array }) fields: FormField[] = []
   @property({ type: Object }) popupOption?: PopupOption
+  @property({ type: Boolean }) isOpened: boolean = false
 
   static get styles(): CSSResult[] {
     return [
       commonStyle,
       css`
         #popup-modal {
+          display: flex;
+          opacity: 0;
           position: absolute;
           left: 0;
           right: 0;
           top: 0;
           bottom: 0;
-          background-color: rgba(0, 0, 0, 0.5);
+          width: 0;
+          height: 0;
+          background-color: rgba(0, 0, 0, 0.6);
+        }
+        #popup-modal[opened] {
+          opacity: 100%;
           width: 100vw;
           height: 100vh;
+          transition: opacity 0.3s ease-out 0.1s;
         }
-        #popup {
-          display: none;
+        #popup-modal > #popup {
+          background-color: var(--theme-dark-color);
+          margin: auto;
+          border-radius: var(--theme-common-radius, 5px);
+          display: flex;
+          flex-direction: column;
+          height: 0px;
+          width: 80vw;
+        }
+        #popup-modal[opened] > #popup {
+          height: 30vh;
+          transition: height 0.3s ease-out 0.1s;
+        }
+        .title-section {
+          display: flex;
+          padding: var(--theme-common-spacing, 5px);
+          background-color: var(--theme-darker-color);
+          border-top-left-radius: var(--theme-common-radius, 5px);
+          border-top-right-radius: var(--theme-common-radius, 5px);
+        }
+        .title-section > span {
+          margin: auto;
+          color: white;
+        }
+        .form {
+          margin: var(--theme-wide-spacing, 10px);
         }
       `,
     ]
@@ -77,16 +113,10 @@ export class FormPopup extends LitElement {
     const fields: FormField[] = this.fields || []
 
     return html`
-      <div id="popup-modal">
-        <div id="popup">
-          ${title
-            ? html`
-                <div class="title-section">
-                  <span>${title}</span>
-                </div>
-              `
-            : ''}
-          <form>
+      <div id="popup-modal" ?opened="${this.isOpened}" @click="${this.close.bind(this)}">
+        <div id="popup" @click="${(e: Event) => e.stopPropagation()}">
+          ${title ? html`<span class="popup-title">${title}</span>` : ''}
+          <form class="form">
             <fieldset>
               ${fields.map((field: FormField) => {
                 const { name, option }: FormField = field
@@ -220,16 +250,25 @@ export class FormPopup extends LitElement {
               })}
             </fieldset>
           </form>
+
+          <div class="button-container">
+            <button class="positive"><mwc-icon>create</mwc-icon></button>
+          </div>
         </div>
       </div>
     `
   }
 
-  constructor(fields: FormField[], popupOption?: PopupOption) {
-    super()
-    this.fields = fields
-    if (popupOption) {
-      this.popupOption = popupOption
-    }
+  open(): void {
+    this.isOpened = true
+  }
+
+  close(): void {
+    this.isOpened = false
+  }
+
+  toggle(): void {
+    console.log('test')
+    this.isOpened = !this.isOpened
   }
 }
