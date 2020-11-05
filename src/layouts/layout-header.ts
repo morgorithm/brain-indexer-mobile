@@ -30,7 +30,7 @@ export class LayoutHeader extends LitElement {
           padding: 10px;
         }
         .center > .page-title {
-          margin: var(--theme-common-margin, 5px);
+          margin: var(--theme-common-spacing, 5px);
           font-size: larger;
           font-weight: bold;
         }

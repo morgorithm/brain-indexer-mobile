@@ -14,7 +14,7 @@ export class LayoutContent extends LitElement {
       commonStyle,
       css`
         :host {
-          margin: var(--theme-common-margin, 5px);
+          margin: var(--theme-common-spacing, 5px);
           display: flex;
           flex-direction: column;
           overflow: hidden;

@@ -15,10 +15,12 @@ body {
   --theme-darker-color: #285943;
 
   --theme-positive-color: #4378db;
+  --theme-negative-color: #fe5d7c;
+  --theme-neutral-color: #8ad1CA;
 
   /* spacing */
-  --theme-common-padding: 5px;
-  --theme-common-margin: 5px;
+  --theme-common-spacing: 5px;
+  --theme-wide-spacing: 10px;
 
   /* radius */
   --theme-common-radius: 5px;

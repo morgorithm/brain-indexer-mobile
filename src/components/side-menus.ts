@@ -74,7 +74,7 @@ export class SideMenus extends LitElement {
           display: flex;
         }
         .mailto > a {
-          padding: var(--theme-common-padding, 5px);
+          padding: var(--theme-common-spacing, 5px);
           color: white;
           margin: auto 0;
           margin-left: auto;

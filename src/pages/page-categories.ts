@@ -22,6 +22,18 @@ export class PageCategories extends Page {
         type: ButtonTypes.Positive,
         action: () => console.log('add'),
       },
+      {
+        icon: 'settings',
+        name: 'setting',
+        type: ButtonTypes.Negative,
+        action: () => console.log('setting'),
+      },
+      {
+        icon: 'settings',
+        name: 'setting',
+        type: ButtonTypes.Neutral,
+        action: () => console.log('setting'),
+      },
     ],
   }
 

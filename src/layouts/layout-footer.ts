@@ -1,4 +1,5 @@
-import { LitElement, TemplateResult, customElement, html, property } from 'lit-element'
+import { LitElement, TemplateResult, customElement, html, property, css, CSSResult } from 'lit-element'
+import { commonStyle } from '../assets/styles/common-style'
 
 export const enum FooterTypes {
   Button = 'button',
@@ -51,6 +52,10 @@ export interface FooterMessageContent {
 @customElement('layout-footer')
 export class LayoutFooter extends LitElement {
   @property({ type: Object }) content?: FooterButtonContent | FooterMessageContent
+
+  static get styles(): CSSResult[] {
+    return [commonStyle, css``]
+  }
 
   render(): TemplateResult {
     return html`<footer>${this.renderFooterContent()}</footer>`
