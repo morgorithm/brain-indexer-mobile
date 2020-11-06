@@ -1,7 +1,7 @@
-import { CSSResult, LitElement, TemplateResult, css, customElement, html, property } from 'lit-element'
-
-import { FooterButtonContent } from '../layouts/layout-footer'
+import { css, CSSResult, customElement, html, LitElement, property, TemplateResult } from 'lit-element'
 import { commonStyle } from '../assets/styles/common-style'
+import { Button } from './button-bar'
+import './button-bar'
 
 export enum FieldTypes {
   Text = 'text',
@@ -47,6 +47,7 @@ export interface PopupOption {
   title?: string
   resizable?: boolean
   movable?: boolean
+  buttons?: Button[]
 }
 
 @customElement('form-popup')
@@ -63,15 +64,16 @@ export class FormPopup extends LitElement {
           display: flex;
           opacity: 0;
           position: absolute;
-          left: 0;
-          right: 0;
-          top: 0;
-          bottom: 0;
-          width: 0;
-          height: 0;
+          left: -100vw;
+          top: -100vh;
           background-color: rgba(0, 0, 0, 0.6);
         }
         #popup-modal[opened] {
+          display: flex;
+          left: 0;
+          right: 0;
+          bottom: 0;
+          top: 0;
           opacity: 100%;
           width: 100vw;
           height: 100vh;
@@ -84,22 +86,18 @@ export class FormPopup extends LitElement {
           display: flex;
           flex-direction: column;
           height: 0px;
-          width: 80vw;
+          width: 0px;
         }
         #popup-modal[opened] > #popup {
           height: 30vh;
+          width: 80vw;
           transition: height 0.3s ease-out 0.1s;
         }
-        .title-section {
-          display: flex;
-          padding: var(--theme-common-spacing, 5px);
-          background-color: var(--theme-darker-color);
-          border-top-left-radius: var(--theme-common-radius, 5px);
-          border-top-right-radius: var(--theme-common-radius, 5px);
+        #popup-modal span.popup-title {
+          display: none;
         }
-        .title-section > span {
-          margin: auto;
-          color: white;
+        #popup-modal[opened] span.popup-title {
+          display: initial;
         }
         .form {
           margin: var(--theme-wide-spacing, 10px);
@@ -109,7 +107,7 @@ export class FormPopup extends LitElement {
   }
 
   render(): TemplateResult {
-    const { title = '', resizable = false, movable = false } = this.popupOption || {}
+    const { title = '', resizable = false, movable = false, buttons = [] } = this.popupOption || {}
     const fields: FormField[] = this.fields || []
 
     return html`
@@ -251,12 +249,14 @@ export class FormPopup extends LitElement {
             </fieldset>
           </form>
 
-          <div class="button-container">
-            <button class="positive"><mwc-icon>create</mwc-icon></button>
-          </div>
+          <button-bar .buttons="${buttons}"></button-bar>
         </div>
       </div>
     `
+  }
+
+  get form(): HTMLFormElement | null {
+    return this.renderRoot?.querySelector('form')
   }
 
   open(): void {
