@@ -38,9 +38,6 @@ export class SimpleDataTable extends LitElement {
         th {
           border-bottom: 1px solid var(--theme-dark-color);
         }
-        th > mwc-icon {
-          font-size: medium;
-        }
         th,
         td {
           padding: var(--theme-common-spacing, 5px) 0;
@@ -48,7 +45,7 @@ export class SimpleDataTable extends LitElement {
         .index {
           width: 10px;
         }
-        .editable-icon > mwc-icon {
+        mwc-icon {
           font-size: medium;
         }
       `,
@@ -71,7 +68,11 @@ export class SimpleDataTable extends LitElement {
                 </th>`
               : ''}
             <th class="index">No.</th>
-            ${fields.map((field: string) => html`<th>${field}</th>`)} ${this.editable ? html`<th></th>` : ''}
+            ${fields.map((field: string) => html`<th>${field}</th>`)}
+            ${this.editable
+              ? html`<th></th>
+                  <th><mwc-icon @click="${this.onAddBtnClick}">add_circle_outline</mwc-icon></th>`
+              : ''}
           </tr>
         </thead>
         <tbody>
@@ -83,8 +84,11 @@ export class SimpleDataTable extends LitElement {
                 ${fields.map((field: string) => html`<td>${item[field]}</td>`)}
                 ${this.editable
                   ? html`<td class="editable-icon">
-                      <mwc-icon @click="${() => this.onMoreBtnClick(item)}">more_horiz</mwc-icon>
-                    </td>`
+                        <mwc-icon @click="${() => this.onEditBtnClick(item)}">edit</mwc-icon>
+                      </td>
+                      <td class="delete-icon">
+                        <mwc-icon @click="${() => this.onDeleteBtnClick(item)}">delete_outline</mwc-icon>
+                      </td> `
                   : ''}
               </tr>`
           )}
@@ -97,7 +101,23 @@ export class SimpleDataTable extends LitElement {
     this.checkAll = !this.checkAll
   }
 
-  onMoreBtnClick(data: Record<string, any>): void {
-    console.log(data)
+  onAddBtnClick(): void {
+    this.dispatchEvent(new CustomEvent('addButtonClick'))
+  }
+
+  onEditBtnClick(data: Record<string, any>): void {
+    this.dispatchEvent(
+      new CustomEvent('editButtonClick', {
+        detail: { data },
+      })
+    )
+  }
+
+  onDeleteBtnClick(data: Record<string, any>): void {
+    this.dispatchEvent(
+      new CustomEvent('deleteButtonClick', {
+        detail: { data },
+      })
+    )
   }
 }

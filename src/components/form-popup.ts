@@ -1,7 +1,9 @@
-import { css, CSSResult, customElement, html, LitElement, property, TemplateResult } from 'lit-element'
-import { commonStyle } from '../assets/styles/common-style'
-import { Button } from './button-bar'
 import './button-bar'
+
+import { CSSResult, LitElement, TemplateResult, css, customElement, html, property } from 'lit-element'
+
+import { Button } from './button-bar'
+import { commonStyle } from '../assets/styles/common-style'
 
 export enum FieldTypes {
   Text = 'text',
@@ -53,6 +55,7 @@ export interface PopupOption {
 @customElement('form-popup')
 export class FormPopup extends LitElement {
   @property({ type: Array }) fields: FormField[] = []
+  @property({ type: Object }) data: Record<string, any> = {}
   @property({ type: Object }) popupOption?: PopupOption
   @property({ type: Boolean }) isOpened: boolean = false
 
@@ -91,10 +94,13 @@ export class FormPopup extends LitElement {
         #popup-modal[opened] > #popup {
           height: 30vh;
           width: 80vw;
-          transition: height 0.3s ease-out 0.1s;
+          transition: height 0.1s ease-out 0.1s;
         }
         #popup-modal span.popup-title {
           display: none;
+          color: var(--theme-darker-color);
+          border-radius: var(--theme-common-radius, 5px) var(--theme-common-radius, 5px) 0 0;
+          background-color: var(--theme-primary-color);
         }
         #popup-modal[opened] span.popup-title {
           display: initial;
@@ -109,12 +115,13 @@ export class FormPopup extends LitElement {
   render(): TemplateResult {
     const { title = '', resizable = false, movable = false, buttons = [] } = this.popupOption || {}
     const fields: FormField[] = this.fields || []
+    const data: Record<string, any> = this.data || {}
 
     return html`
       <div id="popup-modal" ?opened="${this.isOpened}" @click="${this.close.bind(this)}">
         <div id="popup" @click="${(e: Event) => e.stopPropagation()}">
           ${title ? html`<span class="popup-title">${title}</span>` : ''}
-          <form class="form">
+          <form class="form" @submit="${(e: Event) => e.preventDefault()}">
             <fieldset>
               ${fields.map((field: FormField) => {
                 const { name, option }: FormField = field
@@ -131,7 +138,7 @@ export class FormPopup extends LitElement {
                           id="${name}"
                           name="${name}"
                           type="checkbox"
-                          ?checked="${Boolean(defaultValue)}"
+                          ?checked="${Boolean(data[name] || defaultValue)}"
                           ?required="${required}"
                           ?disabled="${!editable}"
                         />
@@ -147,7 +154,7 @@ export class FormPopup extends LitElement {
                           id="${name}"
                           name="${name}"
                           type="date"
-                          value="${defaultValue}"
+                          value="${data[name] || defaultValue}"
                           ?required="${required}"
                           ?readonly="${!editable}"
                         />
@@ -162,7 +169,7 @@ export class FormPopup extends LitElement {
                         id="${name}"
                         name="${name}"
                         type="datetime"
-                        value="${defaultValue}"
+                        value="${data[name] || defaultValue}"
                         ?required="${required}"
                         ?readonly="${!editable}"
                       />
@@ -177,7 +184,7 @@ export class FormPopup extends LitElement {
                         id="${name}"
                         name="${name}"
                         type="number"
-                        value="${defaultValue}"
+                        value="${data[name] || defaultValue}"
                         ?required="${required}"
                         ?readonly="${!editable}"
                         .step="${step}"
@@ -209,7 +216,7 @@ export class FormPopup extends LitElement {
                         id="${name}"
                         name="${name}"
                         type="time"
-                        value="${defaultValue}"
+                        value="${data[name] || defaultValue}"
                         ?required="${required}"
                         ?readonly="${!editable}"
                       />
@@ -223,7 +230,7 @@ export class FormPopup extends LitElement {
                         id="${name}"
                         name="${name}"
                         type="text"
-                        value="${defaultValue}"
+                        value="${data[name] || defaultValue}"
                         ?required="${required}"
                         ?readonly="${!editable}"
                       />
@@ -265,6 +272,8 @@ export class FormPopup extends LitElement {
 
   close(): void {
     this.isOpened = false
+    this.data = {}
+    this.form?.reset()
   }
 
   toggle(): void {

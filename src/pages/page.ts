@@ -1,5 +1,7 @@
-import { LitElement, property } from 'lit-element'
+import { CSSResult, LitElement, css, property } from 'lit-element'
 import { FooterButtonContent, FooterMessageContent } from '../layouts/layout-footer'
+
+import { commonStyle } from '../assets/styles/common-style'
 
 export interface PageInfo {
   title: string
@@ -13,6 +15,21 @@ export class Page extends LitElement implements PageInfo {
   @property({ type: String }) route: string
   @property({ type: Object }) footerContent?: FooterButtonContent | FooterMessageContent
   @property({ type: Boolean }) isFallbackPage: boolean = false
+
+  pageActivated(): void {}
+
+  static get styles(): CSSResult[] {
+    return [
+      commonStyle,
+      css`
+        :host {
+          display: flex;
+          flex-direction: column;
+          flex: 1;
+        }
+      `,
+    ]
+  }
 
   constructor(title: string, route: string, isFallbackPage: boolean = false) {
     super()
@@ -50,5 +67,7 @@ export class Page extends LitElement implements PageInfo {
         detail: { content: this.footerContent },
       })
     )
+
+    this.pageActivated()
   }
 }

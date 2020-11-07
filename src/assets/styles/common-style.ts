@@ -2,6 +2,8 @@ import { CSSResult, css } from 'lit-element'
 
 export const commonStyle: CSSResult = css`
   mwc-icon {
+    display: flex;
+    flex-direction: column;
     color: white;
   }
   mwc-icon:active {

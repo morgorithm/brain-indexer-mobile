@@ -2,6 +2,11 @@
   "compilerOptions": {
     /* Basic Options */
     "target": "es6",
+    "lib": [
+      "DOM",
+      "DOM.Iterable",
+      "ES2019"
+    ],
     "module": "commonjs",
     "sourceMap": true,
     "outDir": "./dist",

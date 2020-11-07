@@ -1,5 +1,6 @@
-import { Category } from './category'
-import { Schema } from '../utils/indexeddb'
+import { Schema, TransactionHelper } from './transaction-helper'
+
+import { CategoryEntity } from './category'
 
 export const cardSchema: Schema = {
   name: 'card',
@@ -9,11 +10,17 @@ export const cardSchema: Schema = {
       field: 'name',
       unique: true,
     },
+    {
+      field: 'categoryId',
+    },
   ],
 }
-
-export class Card {
+export class CardEntity extends TransactionHelper<CardEntity> {
   public name?: string
   public description?: string
-  public category?: Category
+  public category?: CategoryEntity
+
+  constructor() {
+    super(cardSchema)
+  }
 }

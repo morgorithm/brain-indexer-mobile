@@ -9,7 +9,7 @@ if (!applicationName) {
 
 module.exports = {
   mode: 'development',
-  entry: './src/index.ts',
+  entry: './src/bootstrap.ts',
   resolve: {
     extensions: ['.js', '.ts'],
   },

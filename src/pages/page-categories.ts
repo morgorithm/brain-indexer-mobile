@@ -1,16 +1,20 @@
-import { customElement, html, property, TemplateResult } from 'lit-element'
-import { ButtonTypes } from '../components/button-bar'
 import '../components/form-popup'
+
 import { FieldTypes, FormField, FormPopup, PopupOption } from '../components/form-popup'
-import { FooterButtonContent, FooterTypes } from '../layouts/layout-footer'
+import { TemplateResult, customElement, html, property } from 'lit-element'
+
+import { ButtonTypes } from '../components/button-bar'
+import { Category } from '../schemas'
+import { CategoryEntity } from '../schemas/category'
+import { FormUtil } from '../utils'
 import { Page } from './page'
 
 @customElement('page-categories')
 export class PageCategories extends Page {
-  @property({ type: Array }) fields: string[] = ['category', 'qty']
+  @property({ type: Array }) fields: string[] = ['name']
   @property({ type: Array }) formFields: FormField[] = [
     {
-      name: 'category',
+      name: 'name',
       option: {
         type: FieldTypes.Text,
       },
@@ -22,29 +26,11 @@ export class PageCategories extends Page {
       {
         icon: 'save',
         type: ButtonTypes.Positive,
-        action: () => console.log('Save'),
+        action: this.addCategory.bind(this),
       },
     ],
   }
-  @property({ type: Array }) data: Record<string, any>[] = [
-    {
-      category: 'Computer Science',
-      qty: 10,
-    },
-  ]
-
-  @property({ type: Object }) footerContent: FooterButtonContent = {
-    type: FooterTypes.Button,
-    buttons: [
-      {
-        icon: 'add',
-        type: ButtonTypes.Positive,
-        action: () => {
-          this.popup?.toggle()
-        },
-      },
-    ],
-  }
+  @property({ type: Array }) data: Record<string, any>[] = []
 
   render(): TemplateResult {
     const fields: string[] = this.fields || []
@@ -52,7 +38,15 @@ export class PageCategories extends Page {
     const popupOption: PopupOption = this.popupOption || {}
     const data: Record<string, any>[] = this.data || []
 
-    return html`<simple-data-table .fields="${fields}" .data="${data}" editable></simple-data-table>
+    return html`<simple-data-table
+        .fields="${fields}"
+        .data="${data}"
+        editable
+        @addButtonClick="${this.onAddButtonClick}"
+        @editButtonClick="${this.onEditButtonClick}"
+        @deleteButtonClick="${this.onDeleteButtonClick}"
+      ></simple-data-table>
+
       <form-popup .fields="${formFields}" .popupOption="${popupOption}"></form-popup>`
   }
 
@@ -60,7 +54,52 @@ export class PageCategories extends Page {
     super('Categories', 'categories')
   }
 
+  async pageActivated(): Promise<void> {
+    await this.fetchCategories()
+  }
+
   get popup(): FormPopup | null {
     return this.renderRoot?.querySelector('form-popup')
+  }
+
+  async fetchCategories(): Promise<void> {
+    this.data = await Category.find()
+  }
+
+  async addCategory(): Promise<void> {
+    if (this.popup?.form) {
+      const categoryForm: HTMLFormElement = this.popup.form
+      try {
+        await Category.add(FormUtil.serialize(categoryForm))
+        this.popup.close()
+        this.fetchCategories()
+      } catch (e) {
+        throw e
+      }
+    }
+  }
+
+  onAddButtonClick(): void {
+    this.popup?.open()
+  }
+
+  onEditButtonClick(e: CustomEvent): void {
+    const data: CategoryEntity = e.detail.data
+    if (this.popup) {
+      this.popup.data = data
+      this.popup.open()
+    }
+  }
+
+  async onDeleteButtonClick(e: CustomEvent): Promise<void> {
+    try {
+      const { name }: CategoryEntity = e.detail.data
+      if (name) {
+        await Category.delete(name)
+        this.fetchCategories()
+      }
+    } catch (e) {
+      throw e
+    }
   }
 }

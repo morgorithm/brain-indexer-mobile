@@ -1,20 +1,17 @@
-import './assets/styles/styles.css'
-import './components/side-menus'
-import './layouts'
-import './pages'
+import '../assets/styles/styles.css'
+import '../components/side-menus'
+import '../layouts'
 
 import { CSSResult, LitElement, TemplateResult, css, customElement, html, property } from 'lit-element'
-import { DATABASE, Menus } from './constants'
-import { IndexedDB, Router } from './utils'
 
-import { SideMenus } from './components/side-menus'
-import { commonStyle } from './assets/styles/common-style'
-import { schemas } from './schemas'
+import { Menus } from '../constants'
+import { Router } from '../utils'
+import { SideMenus } from '../components/side-menus'
+import { commonStyle } from '../assets/styles/common-style'
 
 @customElement('brain-indexer')
 export class BrainIndexer extends LitElement {
   @property({ type: Object }) router: Router = new Router()
-  @property({ type: Object }) indexedDB: IndexedDB = new IndexedDB(DATABASE.name, schemas, DATABASE.version)
 
   static get styles(): CSSResult[] {
     return [
@@ -49,11 +46,6 @@ export class BrainIndexer extends LitElement {
 
       <layout-footer></layout-footer>
     `
-  }
-
-  constructor() {
-    super()
-    this.indexedDB.createDatabase()
   }
 
   onMenuIconClick(): void {
