@@ -1,6 +1,8 @@
 import '../components/form-popup'
+import '../components/simple-data-list'
 
 import { FieldTypes, FormField, FormPopup, PopupOption } from '../components/form-popup'
+import { ListField, ListFieldSet } from '../components/simple-data-list'
 import { TemplateResult, customElement, html, property } from 'lit-element'
 
 import { ButtonTypes } from '../components/button-bar'
@@ -11,7 +13,16 @@ import { Page } from './page'
 
 @customElement('page-categories')
 export class PageCategories extends Page {
-  @property({ type: Array }) fields: string[] = ['name']
+  @property({ type: Array }) fields: ListFieldSet[] = [
+    {
+      keyField: { name: 'name', icon: 'microwave' },
+      detailFields: [
+        {
+          name: 'description',
+        },
+      ],
+    },
+  ]
   @property({ type: Array }) formFields: FormField[] = [
     {
       name: 'name',
@@ -33,19 +44,20 @@ export class PageCategories extends Page {
   @property({ type: Array }) data: Record<string, any>[] = []
 
   render(): TemplateResult {
-    const fields: string[] = this.fields || []
+    const fields: ListFieldSet[] = this.fields || []
     const formFields: FormField[] = this.formFields || []
     const popupOption: PopupOption = this.popupOption || {}
     const data: Record<string, any>[] = this.data || []
 
-    return html`<simple-data-table
+    return html` <simple-data-list .fields="${fields}" .data="${data}" editable selectable></simple-data-list>
+      <!-- <simple-data-table
         .fields="${fields}"
         .data="${data}"
         editable
         @addButtonClick="${this.onAddButtonClick}"
         @editButtonClick="${this.onEditButtonClick}"
         @deleteButtonClick="${this.onDeleteButtonClick}"
-      ></simple-data-table>
+      ></simple-data-table> -->
 
       <form-popup .fields="${formFields}" .popupOption="${popupOption}"></form-popup>`
   }
@@ -63,7 +75,29 @@ export class PageCategories extends Page {
   }
 
   async fetchCategories(): Promise<void> {
-    this.data = await Category.find()
+    // this.data = await Category.find()
+    this.data = [
+      {
+        name: 'Algorithm',
+        description: 'This is description for algoritm category',
+      },
+      {
+        name: 'Algorithm',
+        description: 'This is description for algoritm category',
+      },
+      {
+        name: 'Algorithm',
+        description: 'This is description for algoritm category',
+      },
+      {
+        name: 'Algorithm',
+        description: 'This is description for algoritm category',
+      },
+      {
+        name: 'Algorithm',
+        description: 'This is description for algoritm category',
+      },
+    ]
   }
 
   async addCategory(): Promise<void> {
