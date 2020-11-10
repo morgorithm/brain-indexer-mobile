@@ -14,23 +14,9 @@ import { Page } from './page'
 @customElement('page-categories')
 export class PageCategories extends Page {
   @property({ type: Array }) fields: ListFieldSet[] = [
-    {
-      keyField: { name: 'name', icon: 'microwave' },
-      detailFields: [
-        {
-          name: 'description',
-        },
-      ],
-    },
+    { keyField: { name: 'name' }, detailFields: [{ name: 'description' }] },
   ]
-  @property({ type: Array }) formFields: FormField[] = [
-    {
-      name: 'name',
-      option: {
-        type: FieldTypes.Text,
-      },
-    },
-  ]
+  @property({ type: Array }) formFields: FormField[] = [{ name: 'name' }, { name: 'description' }]
   @property({ type: Object }) popupOption: PopupOption = {
     title: 'Add Category',
     buttons: [
@@ -49,15 +35,15 @@ export class PageCategories extends Page {
     const popupOption: PopupOption = this.popupOption || {}
     const data: Record<string, any>[] = this.data || []
 
-    return html` <simple-data-list .fields="${fields}" .data="${data}" editable selectable></simple-data-list>
-      <!-- <simple-data-table
+    return html` <simple-data-list
         .fields="${fields}"
         .data="${data}"
+        addable
         editable
         @addButtonClick="${this.onAddButtonClick}"
         @editButtonClick="${this.onEditButtonClick}"
         @deleteButtonClick="${this.onDeleteButtonClick}"
-      ></simple-data-table> -->
+      ></simple-data-list>
 
       <form-popup .fields="${formFields}" .popupOption="${popupOption}"></form-popup>`
   }
@@ -75,29 +61,7 @@ export class PageCategories extends Page {
   }
 
   async fetchCategories(): Promise<void> {
-    // this.data = await Category.find()
-    this.data = [
-      {
-        name: 'Algorithm',
-        description: 'This is description for algoritm category',
-      },
-      {
-        name: 'Algorithm',
-        description: 'This is description for algoritm category',
-      },
-      {
-        name: 'Algorithm',
-        description: 'This is description for algoritm category',
-      },
-      {
-        name: 'Algorithm',
-        description: 'This is description for algoritm category',
-      },
-      {
-        name: 'Algorithm',
-        description: 'This is description for algoritm category',
-      },
-    ]
+    this.data = await Category.find()
   }
 
   async addCategory(): Promise<void> {

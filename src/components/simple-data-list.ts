@@ -85,6 +85,23 @@ export class SimpleDataList extends LitElement {
           padding: var(--theme-common-spacing, 5px);
           transition: all 0.3s ease-out 0.1s;
         }
+        .inner-button-container {
+          display: flex;
+          margin: var(--theme-common-spacing, 5px) 0px;
+        }
+        .inner-button {
+          font-size: medium;
+          margin: auto 0px auto var(--theme-common-spacing, 5px);
+        }
+        .inner-button:nth-child(1) {
+          margin-left: auto;
+        }
+        .inner-button.positive {
+          color: var(--theme-positive-color);
+        }
+        .inner-button.negative {
+          color: var(--theme-negative-color);
+        }
       `,
     ]
   }
@@ -97,9 +114,7 @@ export class SimpleDataList extends LitElement {
       <ul>
         <div class="list-header">
           <span class="title">${this.title}</span>
-          ${this.addable ? html` <mwc-icon>add_circle_outline</mwc-icon> ` : ''}
-          ${this.editable ? html` <mwc-icon>edit</mwc-icon> ` : ''}
-          ${this.selectable ? html`<mwc-icon>check_circle_outline</mwc-icon>` : ''}
+          ${this.addable ? html` <mwc-icon @click="${this.onAddButtonClick}">add_circle_outline</mwc-icon> ` : ''}
         </div>
 
         ${data.map(
@@ -150,11 +165,44 @@ export class SimpleDataList extends LitElement {
                     `
                   )}
                 </div>
+
+                ${this.editable
+                  ? html`<div class="inner-button-container">
+                      <mwc-icon
+                        class="inner-button positive"
+                        @click="${(e: Event) => {
+                          e.stopPropagation()
+                          this.onEditButtonClick(item)
+                        }}"
+                        >edit</mwc-icon
+                      >
+                      <mwc-icon
+                        class="inner-button negative"
+                        @click="${(e: Event) => {
+                          e.stopPropagation()
+                          this.onDeleteButtonClick(item)
+                        }}"
+                        >delete</mwc-icon
+                      >
+                    </div>`
+                  : ''}
               `
             })}
           </li>`
         )}
       </ul>
     `
+  }
+
+  onAddButtonClick() {
+    this.dispatchEvent(new CustomEvent('addButtonClick'))
+  }
+
+  onEditButtonClick(data: Record<string, any>) {
+    this.dispatchEvent(new CustomEvent('editButtonClick', { detail: { data } }))
+  }
+
+  onDeleteButtonClick(data: Record<string, any>) {
+    this.dispatchEvent(new CustomEvent('deleteButtonClick', { detail: { data } }))
   }
 }

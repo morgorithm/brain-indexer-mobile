@@ -68,6 +68,11 @@ export const commonStyle: CSSResult = css`
     color: var(--theme-darker-color);
     text-transform: capitalize;
     display: flex;
+    margin: var(--theme-common-spacing, 5px);
+  }
+  label > span {
+    margin: auto;
+    font-size: small;
   }
   label > input {
     flex: 1;
