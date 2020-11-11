@@ -15,7 +15,7 @@ export interface ListFieldSet {
 
 @customElement('simple-data-list')
 export class SimpleDataList extends LitElement {
-  @property({ type: Array }) fields: ListFieldSet[] = []
+  @property({ type: Object }) fieldSet: ListFieldSet = { keyField: { name: '' } }
   @property({ type: String }) title: string = 'My List'
   @property({ type: Boolean }) selectable: boolean = false
   @property({ type: Boolean }) addable: boolean = false
@@ -107,8 +107,11 @@ export class SimpleDataList extends LitElement {
   }
 
   render(): TemplateResult {
-    const fields: ListFieldSet[] = this.fields || []
+    const fieldSet: ListFieldSet = this.fieldSet || { keyField: { name: '' } }
     const data: Record<string, any>[] = this.data || []
+
+    const { name, icon }: ListField = fieldSet.keyField
+    const detailFields: ListField[] = fieldSet.detailFields || []
 
     return html`
       <ul>
@@ -117,8 +120,10 @@ export class SimpleDataList extends LitElement {
           ${this.addable ? html` <mwc-icon @click="${this.onAddButtonClick}">add_circle_outline</mwc-icon> ` : ''}
         </div>
 
-        ${data.map(
-          (item: Record<string, any>, itemIdx: number) => html` <li
+        ${data.map((item: Record<string, any>, itemIdx: number) => {
+          const selected: boolean = this.selectedIdx === itemIdx
+
+          return html` <li
             @click="${(e: Event) => {
               if (this.selectable) {
                 const listItem: HTMLLIElement = e.currentTarget as HTMLLIElement
@@ -131,65 +136,58 @@ export class SimpleDataList extends LitElement {
               }
             }}"
           >
-            ${fields.map(({ keyField, detailFields = [] }: ListFieldSet) => {
-              const { name, icon }: ListField = keyField
-              const selected: boolean = this.selectedIdx === itemIdx
+            <div class="card">
+              ${icon ? html`<span class="icon"><mwc-icon>${icon}</mwc-icon></span>` : ''}
+              <span class="key-field">${item[name]}</span>
 
-              return html`
-                <div class="card">
+              ${detailFields?.length
+                ? html`
+                    <mwc-icon
+                      @click="${(e: Event) => {
+                        e.stopPropagation()
+                        if (selected) {
+                          this.selectedIdx = -1
+                        } else {
+                          this.selectedIdx = itemIdx
+                        }
+                      }}"
+                      >${selected ? 'arrow_drop_up' : 'arrow_drop_down'}</mwc-icon
+                    >
+                  `
+                : ''}
+            </div>
+
+            <div class="detail-card" ?opened="${selected}">
+              ${detailFields.map(
+                ({ name, icon }: ListField) => html`
                   ${icon ? html`<span class="icon"><mwc-icon>${icon}</mwc-icon></span>` : ''}
-                  <span class="key-field">${item[name]}</span>
+                  <span class="detail-field">${item[name]}</span>
+                `
+              )}
+            </div>
 
-                  ${detailFields?.length
-                    ? html`
-                        <mwc-icon
-                          @click="${(e: Event) => {
-                            e.stopPropagation()
-                            if (this.selectedIdx === itemIdx) {
-                              this.selectedIdx = -1
-                            } else {
-                              this.selectedIdx = itemIdx
-                            }
-                          }}"
-                          >${selected ? 'arrow_drop_up' : 'arrow_drop_down'}</mwc-icon
-                        >
-                      `
-                    : ''}
-                </div>
-
-                <div class="detail-card" ?opened="${selected}">
-                  ${detailFields.map(
-                    ({ name, icon }: ListField) => html`
-                      ${icon ? html`<span class="icon"><mwc-icon>${icon}</mwc-icon></span>` : ''}
-                      <span class="detail-field">${item[name]}</span>
-                    `
-                  )}
-                </div>
-
-                ${this.editable
-                  ? html`<div class="inner-button-container">
-                      <mwc-icon
-                        class="inner-button positive"
-                        @click="${(e: Event) => {
-                          e.stopPropagation()
-                          this.onEditButtonClick(item)
-                        }}"
-                        >edit</mwc-icon
-                      >
-                      <mwc-icon
-                        class="inner-button negative"
-                        @click="${(e: Event) => {
-                          e.stopPropagation()
-                          this.onDeleteButtonClick(item)
-                        }}"
-                        >delete</mwc-icon
-                      >
-                    </div>`
-                  : ''}
-              `
-            })}
+            ${this.editable
+              ? html`<div class="inner-button-container">
+                  <mwc-icon
+                    class="inner-button positive"
+                    @click="${(e: Event) => {
+                      e.stopPropagation()
+                      this.onEditButtonClick(item)
+                    }}"
+                    >edit</mwc-icon
+                  >
+                  <mwc-icon
+                    class="inner-button negative"
+                    @click="${(e: Event) => {
+                      e.stopPropagation()
+                      this.onDeleteButtonClick(item)
+                    }}"
+                    >delete</mwc-icon
+                  >
+                </div>`
+              : ''}
           </li>`
-        )}
+        })}
       </ul>
     `
   }
