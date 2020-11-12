@@ -4,23 +4,24 @@ import { CategoryEntity } from './category'
 
 export const cardSchema: Schema = {
   name: 'card',
-  keyPath: 'name',
   indexes: [
     {
       field: 'name',
       unique: true,
     },
     {
-      field: 'categoryId',
+      field: 'category',
     },
   ],
 }
 export class CardEntity extends TransactionHelper<CardEntity> {
+  public readonly id?: string
   public name?: string
   public description?: string
   public category?: CategoryEntity
 
   constructor() {
+    debugger
     super(cardSchema)
   }
 }

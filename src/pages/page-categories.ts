@@ -18,9 +18,10 @@ export class PageCategories extends Page {
     const data: Record<string, any>[] = this.data || []
 
     return html` <crud-data-list
+      .title="${this.title}"
       .fields="${fields}"
       .data="${data}"
-      @addButtonClick="${this.addCategory}"
+      @saveButtonClick="${this.saveCategory}"
       @deleteButtonClick="${this.deleteCategory}"
     ></crud-data-list>`
   }
@@ -37,9 +38,10 @@ export class PageCategories extends Page {
     this.data = await Category.find()
   }
 
-  async addCategory(e: CustomEvent): Promise<void> {
+  async saveCategory(e: CustomEvent): Promise<void> {
     try {
-      await Category.add(e.detail.data)
+      const category: Partial<CategoryEntity> = e.detail.data
+      await Category.save(category)
       this.fetchCategories()
     } catch (e) {
       throw e

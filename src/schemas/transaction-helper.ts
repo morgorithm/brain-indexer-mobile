@@ -7,7 +7,7 @@ export interface Index {
 
 export interface Schema {
   name: string
-  keyPath: string
+  keyPath?: string
   indexes: Index[]
 }
 
@@ -28,13 +28,16 @@ export class TransactionHelper<T> {
     return new Promise((resolve, reject) => {
       dbRequest.onsuccess = () => {
         this.db = dbRequest.result
+        debugger
         resolve()
       }
       dbRequest.onupgradeneeded = () => {
         this.db = dbRequest.result
+        const keyPath: string = this.schema.keyPath || 'id'
+        const useAutoIncrement: boolean = keyPath === 'id'
         const objectStore: IDBObjectStore = this.db?.createObjectStore(this.schema.name, {
-          keyPath: this.schema.keyPath,
-          autoIncrement: true,
+          keyPath,
+          autoIncrement: useAutoIncrement,
         })
 
         this.schema.indexes.forEach(({ field, unique }: Index) => {
@@ -88,6 +91,21 @@ export class TransactionHelper<T> {
     try {
       const objectStore: IDBObjectStore = await this.getObejctStore('readwrite')
       const request: IDBRequest = objectStore.delete(key)
+      return this.commonResultHandler(request)
+    } catch (e) {
+      throw e
+    }
+  }
+
+  async save(data: Partial<T>, key?: any): Promise<void> {
+    try {
+      const objectStore: IDBObjectStore = await this.getObejctStore('readwrite')
+      let request: IDBRequest
+      if (key) {
+        request = objectStore.put(data, key)
+      } else {
+        request = objectStore.put(data)
+      }
       return this.commonResultHandler(request)
     } catch (e) {
       throw e

@@ -244,7 +244,7 @@ export class FormPopup extends LitElement {
                         id="${name}"
                         name="${name}"
                         type="text"
-                        value="${defaultValue}"
+                        value="${data[name] || defaultValue}"
                         ?required="${required}"
                         ?readonly="${!editable}"
                       />

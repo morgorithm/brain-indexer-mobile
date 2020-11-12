@@ -17,6 +17,7 @@ export interface Field {
 
 @customElement('crud-data-list')
 export class CRUDDataList extends LitElement {
+  @property({ type: String }) title: string = ''
   @property({ type: Array }) fields: Field[] = []
   @property({ type: Object }) popupOption: PopupOption = {
     buttons: [
@@ -26,7 +27,7 @@ export class CRUDDataList extends LitElement {
         action: () => {
           if (this.popup?.form) {
             this.dispatchEvent(
-              new CustomEvent('addButtonClick', {
+              new CustomEvent('saveButtonClick', {
                 detail: { data: FormUtil.serialize(this.popup.form) },
               })
             )
@@ -42,10 +43,12 @@ export class CRUDDataList extends LitElement {
     const fields: Field[] = this.fields || []
     const formFields: FormField[] = this.convertFieldsToFormFields(fields)
     const fieldSet: ListFieldSet = this.convertFieldsToListFieldSet(fields)
+    const popupOption: PopupOption = this.popupOption || {}
     const data: Record<string, any>[] = this.data || []
 
     return html`
       <simple-data-list
+        .title="${this.title}"
         .fieldSet="${fieldSet}"
         .data="${data}"
         addable
@@ -54,7 +57,7 @@ export class CRUDDataList extends LitElement {
         @editButtonClick="${this.onEditButtonClick}"
       ></simple-data-list>
 
-      <form-popup .fields="${formFields}" .popupOption="${this.popupOption}"></form-popup>
+      <form-popup .fields="${formFields}" .popupOption="${popupOption}"></form-popup>
     `
   }
 
@@ -90,13 +93,16 @@ export class CRUDDataList extends LitElement {
   }
 
   private onAddButtonClick(): void {
-    this.popup?.open()
+    if (this.popup) {
+      this.popup.title = `Add ${this.title}`
+      this.popup.open()
+    }
   }
 
   private onEditButtonClick(e: CustomEvent): void {
     const data: Record<string, any> = e.detail.data
     if (this.popup) {
-      debugger
+      this.popup.title = `Edit ${this.title}`
       this.popup.data = data
       this.popup.open()
     }
