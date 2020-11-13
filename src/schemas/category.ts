@@ -1,5 +1,17 @@
 import { Schema, TransactionHelper } from './transaction-helper'
 
+export class Category {
+  public id?: number
+  public name?: string
+  public itemCnt?: number
+
+  constructor({ id, name, itemCnt }: Category) {
+    if (id) this.id = Number(id)
+    if (name) this.name = name
+    if (itemCnt) this.itemCnt = itemCnt
+  }
+}
+
 export const categorySchema: Schema = {
   name: 'category',
   indexes: [
@@ -10,12 +22,6 @@ export const categorySchema: Schema = {
   ],
 }
 
-export class CategoryEntity extends TransactionHelper<CategoryEntity> {
-  public readonly id?: string
-  public name?: string
-  public readonly itemCnt: number = 0
-
-  constructor() {
-    super(categorySchema)
-  }
+export class CategoryEntity extends TransactionHelper<Category> {
+  protected schema: Schema = categorySchema
 }

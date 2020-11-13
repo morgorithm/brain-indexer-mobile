@@ -28,7 +28,7 @@ export class PageCards extends Page {
   }
 
   async pageActivated(): Promise<void> {
-    const categories: CategoryEntity[] = await Category.find()
+    const categories: Category[] = await new CategoryEntity().find()
     this.fields = [
       {
         name: 'name',
@@ -37,8 +37,8 @@ export class PageCards extends Page {
         name: 'category',
         options: {
           type: FieldTypes.Selector,
-          options: categories.map((c: CategoryEntity) => {
-            const { id, name }: CategoryEntity = c
+          options: categories.map((c: Category) => {
+            const { id, name }: Category = c
             return { name: name as string, value: id }
           }),
         },
@@ -48,13 +48,13 @@ export class PageCards extends Page {
   }
 
   async fetchCards(): Promise<void> {
-    this.data = await Card.find()
+    this.data = await new CardEntity().find()
   }
 
   async saveCard(e: CustomEvent): Promise<void> {
     try {
-      const card: Partial<CardEntity> = e.detail.data
-      await Card.save(card)
+      const card: Card = new Card(e.detail.data)
+      await new CardEntity().save(card)
       this.fetchCards()
     } catch (e) {
       throw e
@@ -63,9 +63,9 @@ export class PageCards extends Page {
 
   async deleteCard(e: CustomEvent): Promise<void> {
     try {
-      const { name }: CardEntity = e.detail.data
+      const { name }: Card = new Card(e.detail.data)
       if (name) {
-        await Card.delete(name)
+        await new CardEntity().delete(name)
         this.fetchCards()
       }
     } catch (e) {

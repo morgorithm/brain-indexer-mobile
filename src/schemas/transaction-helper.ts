@@ -1,8 +1,20 @@
 import { DATABASE } from '../constants'
 
+export const enum RelationType {
+  ManyToOne,
+  OneToOne,
+  ManyToMany,
+  OneToMany,
+}
+
+export interface Reference {
+  relationType: RelationType
+}
+
 export interface Index {
   field: string
   unique?: boolean
+  reference?: Reference
 }
 
 export interface Schema {
@@ -11,15 +23,11 @@ export interface Schema {
   indexes: Index[]
 }
 
-export class TransactionHelper<T> {
-  private databaseName: string = DATABASE.name
-  private version: number = (DATABASE.version = 1)
-  private readonly schema: Schema
+export abstract class TransactionHelper<T> {
+  protected abstract schema: Schema
+  protected databaseName: string = DATABASE.name
+  protected version: number = (DATABASE.version = 1)
   private db?: IDBDatabase
-
-  constructor(schema: Schema) {
-    this.schema = schema
-  }
 
   async openDB(): Promise<void> {
     if (!window.indexedDB) throw new Error(`Current browser doesn't support indexedDB`)
@@ -28,36 +36,26 @@ export class TransactionHelper<T> {
     return new Promise((resolve, reject) => {
       dbRequest.onsuccess = () => {
         this.db = dbRequest.result
-        debugger
         resolve()
       }
-      dbRequest.onupgradeneeded = () => {
-        this.db = dbRequest.result
-        const keyPath: string = this.schema.keyPath || 'id'
-        const useAutoIncrement: boolean = keyPath === 'id'
-        const objectStore: IDBObjectStore = this.db?.createObjectStore(this.schema.name, {
-          keyPath,
-          autoIncrement: useAutoIncrement,
-        })
 
-        this.schema.indexes.forEach(({ field, unique }: Index) => {
-          objectStore.createIndex(field, field, { unique })
-        })
-      }
       dbRequest.onerror = () => {
         reject(dbRequest.error)
       }
     })
   }
 
-  private async getObejctStore(mode: 'readwrite' | 'readonly' | 'versionchange' | undefined): Promise<IDBObjectStore> {
+  private async getObejctStore(
+    mode: 'readwrite' | 'readonly' | 'versionchange' | undefined,
+    store?: string
+  ): Promise<IDBObjectStore> {
     if (!this.db) {
       await this.openDB()
     }
 
     const objectStore: IDBObjectStore | undefined = this.db
-      ?.transaction(this.schema.name, mode)
-      .objectStore(this.schema.name)
+      ?.transaction(store || this.schema.name, mode)
+      .objectStore(store || this.schema.name)
 
     if (!objectStore) throw new Error('Failed to get object store')
     return objectStore
@@ -67,11 +65,31 @@ export class TransactionHelper<T> {
     return null
   }
 
-  async find(key?: string): Promise<T[]> {
+  async find(objectStore?: IDBObjectStore): Promise<T[]> {
     try {
-      const objectStore: IDBObjectStore = await this.getObejctStore('readonly')
-      const request: IDBRequest = objectStore.getAll(key)
-      return this.commonResultHandler(request)
+      if (!objectStore) {
+        objectStore = await this.getObejctStore('readonly')
+      }
+      const request: IDBRequest = objectStore.getAll()
+      const data: T[] = await this.commonResultHandler(request)
+
+      if (this.schema.indexes.some((idx: Index) => idx.reference)) {
+        for (let idx of this.schema.indexes) {
+          if (idx.reference) {
+            const referenceStore: IDBObjectStore = await this.getObejctStore('readonly', idx.field)
+
+            await Promise.all(
+              data.map(async (item: Record<string, any>) => {
+                const referenceRequest: IDBRequest = referenceStore.get(parseInt(item[idx.field]))
+                const referenceData: Record<string, any> = await this.commonResultHandler(referenceRequest)
+                item[idx.field] = referenceData
+              })
+            )
+          }
+        }
+      }
+
+      return data
     } catch (e) {
       throw e
     }
@@ -97,7 +115,7 @@ export class TransactionHelper<T> {
     }
   }
 
-  async save(data: Partial<T>, key?: any): Promise<void> {
+  async save(data: Partial<T> | T, key?: any): Promise<void> {
     try {
       const objectStore: IDBObjectStore = await this.getObejctStore('readwrite')
       let request: IDBRequest

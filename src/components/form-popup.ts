@@ -202,7 +202,7 @@ export class FormPopup extends LitElement {
                         <select id="${name}" name="${name}">
                           ${appendEmptyOption ? html`<option></option>` : ''}
                           ${options.map(
-                            (option: SelectorOption) => html`<option value="${option.value}">${option.value}</option>`
+                            (option: SelectorOption) => html`<option value="${option.value}">${option.name}</option>`
                           )}
                         </select>
                       </label>

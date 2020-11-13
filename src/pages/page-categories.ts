@@ -1,10 +1,9 @@
 import '../components/crud-data-list'
 import '../components/form-popup'
 
+import { Category, CategoryEntity } from '../schemas/category'
 import { TemplateResult, customElement, html, property } from 'lit-element'
 
-import { Category } from '../schemas'
-import { CategoryEntity } from '../schemas/category'
 import { Field } from '../components/crud-data-list'
 import { Page } from './page'
 
@@ -35,13 +34,13 @@ export class PageCategories extends Page {
   }
 
   async fetchCategories(): Promise<void> {
-    this.data = await Category.find()
+    this.data = await new CategoryEntity().find()
   }
 
   async saveCategory(e: CustomEvent): Promise<void> {
     try {
-      const category: Partial<CategoryEntity> = e.detail.data
-      await Category.save(category)
+      const category: Category = new Category(e.detail.data)
+      await new CategoryEntity().save(category)
       this.fetchCategories()
     } catch (e) {
       throw e
@@ -50,9 +49,9 @@ export class PageCategories extends Page {
 
   async deleteCategory(e: CustomEvent): Promise<void> {
     try {
-      const { name }: CategoryEntity = e.detail.data
-      if (name) {
-        await Category.delete(name)
+      const category: Category = new Category(e.detail.data)
+      if (category.name) {
+        await new CategoryEntity().delete(category.name)
         this.fetchCategories()
       }
     } catch (e) {

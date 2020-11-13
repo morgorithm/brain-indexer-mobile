@@ -1,6 +1,19 @@
-import { Schema, TransactionHelper } from './transaction-helper'
+import { Category, CategoryEntity } from './category'
+import { RelationType, Schema, TransactionHelper } from './transaction-helper'
 
-import { CategoryEntity } from './category'
+export class Card {
+  public id?: number
+  public name?: string
+  public description?: string
+  public category?: Category | number
+
+  constructor({ id, name, description, category }: Card) {
+    if (id) this.id = Number(id)
+    if (name) this.name = name
+    if (description) this.description = description
+    if (category) this.category = category instanceof Category ? category : Number(category)
+  }
+}
 
 export const cardSchema: Schema = {
   name: 'card',
@@ -11,17 +24,13 @@ export const cardSchema: Schema = {
     },
     {
       field: 'category',
+      reference: {
+        relationType: RelationType.ManyToOne,
+      },
     },
   ],
 }
-export class CardEntity extends TransactionHelper<CardEntity> {
-  public readonly id?: string
-  public name?: string
-  public description?: string
-  public category?: CategoryEntity
 
-  constructor() {
-    debugger
-    super(cardSchema)
-  }
+export class CardEntity extends TransactionHelper<Card> {
+  protected schema: Schema = cardSchema
 }
