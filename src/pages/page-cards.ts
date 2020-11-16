@@ -32,6 +32,9 @@ export class PageCards extends Page {
     this.fields = [
       {
         name: 'name',
+        options: {
+          required: true,
+        },
       },
       {
         name: 'category',
@@ -41,6 +44,14 @@ export class PageCards extends Page {
             const { id, name }: Category = c
             return { name: name as string, value: id }
           }),
+          required: true,
+        },
+      },
+      {
+        name: 'description',
+        options: {
+          type: FieldTypes.Textarea,
+          required: true,
         },
       },
     ]

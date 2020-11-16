@@ -19,9 +19,19 @@ export const categorySchema: Schema = {
       field: 'name',
       unique: true,
     },
+    {
+      field: 'itemCnt',
+    },
   ],
 }
 
 export class CategoryEntity extends TransactionHelper<Category> {
   protected schema: Schema = categorySchema
+
+  protected async beforeDelete(key: number) {
+    const category: Category = await this.findOne(key)
+    if (!category?.itemCnt || category.itemCnt > 0) {
+      throw new Error(`it's being referenced by ${category.itemCnt} number(s) of card(s)`)
+    }
+  }
 }

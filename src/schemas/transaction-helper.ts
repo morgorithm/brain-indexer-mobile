@@ -1,3 +1,4 @@
+import { CRUDHooks } from './crud-hooks'
 import { DATABASE } from '../constants'
 
 export const enum RelationType {
@@ -23,7 +24,7 @@ export interface Schema {
   indexes: Index[]
 }
 
-export abstract class TransactionHelper<T> {
+export abstract class TransactionHelper<T> extends CRUDHooks<T> {
   protected abstract schema: Schema
   protected databaseName: string = DATABASE.name
   protected version: number = (DATABASE.version = 1)
@@ -61,8 +62,17 @@ export abstract class TransactionHelper<T> {
     return objectStore
   }
 
-  findOne(condition?: Partial<T>): T | null {
-    return null
+  async findOne(key: any): Promise<T> {
+    try {
+      const objectStore: IDBObjectStore = await this.getObejctStore('readonly')
+      key = await this.beforeRead(key)
+      const request: IDBRequest = objectStore.get(key)
+      let data: T = await this.commonResultHandler(request)
+      data = (await this.afterRead(data)) as T
+      return data
+    } catch (e) {
+      throw e
+    }
   }
 
   async find(objectStore?: IDBObjectStore): Promise<T[]> {
@@ -80,8 +90,16 @@ export abstract class TransactionHelper<T> {
 
             await Promise.all(
               data.map(async (item: Record<string, any>) => {
-                const referenceRequest: IDBRequest = referenceStore.get(parseInt(item[idx.field]))
-                const referenceData: Record<string, any> = await this.commonResultHandler(referenceRequest)
+                let referenceRequest: IDBRequest | null = null
+                let referenceData: Record<string, any> = {}
+                if (idx.reference?.relationType === RelationType.ManyToOne) {
+                  referenceRequest = referenceStore.get(parseInt(item[idx.field]))
+                }
+
+                if (referenceRequest) {
+                  referenceData = await this.commonResultHandler(referenceRequest)
+                }
+
                 item[idx.field] = referenceData
               })
             )
@@ -95,36 +113,33 @@ export abstract class TransactionHelper<T> {
     }
   }
 
-  async add(data: Partial<T>): Promise<void> {
-    try {
-      const objectStore: IDBObjectStore = await this.getObejctStore('readwrite')
-      const request: IDBRequest = objectStore.add(data)
-      return this.commonResultHandler(request)
-    } catch (e) {
-      throw e
-    }
-  }
-
   async delete(key: string): Promise<void> {
     try {
       const objectStore: IDBObjectStore = await this.getObejctStore('readwrite')
+      await this.beforeDelete(key)
       const request: IDBRequest = objectStore.delete(key)
-      return this.commonResultHandler(request)
+      await this.commonResultHandler(request)
+      await this.afterDelete()
     } catch (e) {
       throw e
     }
   }
 
-  async save(data: Partial<T> | T, key?: any): Promise<void> {
+  async save(data: T, key?: any): Promise<void> {
     try {
       const objectStore: IDBObjectStore = await this.getObejctStore('readwrite')
       let request: IDBRequest
+
       if (key) {
         request = objectStore.put(data, key)
+        const createdKey: string | number = await this.commonResultHandler(request)
+        await this.afterSave(createdKey)
       } else {
+        data = await this.beforeSave(data)
         request = objectStore.put(data)
+        const createdKey: string | number = await this.commonResultHandler(request)
+        await this.afterSave(createdKey)
       }
-      return this.commonResultHandler(request)
     } catch (e) {
       throw e
     }

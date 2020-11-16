@@ -6,13 +6,14 @@ import { Button } from './button-bar'
 import { commonStyle } from '../assets/styles/common-style'
 
 export enum FieldTypes {
-  Text = 'text',
-  Number = 'number',
-  Selector = 'selector',
-  Checkbox = 'checkbox',
-  Date = 'date',
-  Time = 'time',
-  DateTime = 'datetime',
+  Text,
+  Textarea,
+  Number,
+  Selector,
+  Checkbox,
+  Date,
+  Time,
+  DateTime,
 }
 
 export interface BasicFieldOption {
@@ -234,6 +235,20 @@ export class FormPopup extends LitElement {
                         ?required="${required}"
                         ?readonly="${!editable}"
                       />
+                    </label>`
+                    break
+
+                  case FieldTypes.Textarea:
+                    template = html`<label for="${name}">
+                      <span class="label">${name}</span>
+                      <textarea
+                        id="${name}"
+                        name="${name}"
+                        value="${data[name] || defaultValue}"
+                        ?required="${required}"
+                        ?readonly="${!editable}"
+                      >
+                      </textarea>
                     </label>`
                     break
 
