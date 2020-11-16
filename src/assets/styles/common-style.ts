@@ -53,9 +53,13 @@ export const commonStyle: CSSResult = css`
   }
   form {
     flex: 1;
+    display: flex;
+    overflow: hidden;
   }
   fieldset {
+    flex: 1;
     border: none;
+    overflow: auto;
   }
   .popup-title {
     text-align: center;
@@ -68,21 +72,28 @@ export const commonStyle: CSSResult = css`
     color: var(--theme-darker-color);
     text-transform: capitalize;
     display: flex;
-    margin: var(--theme-common-spacing, 5px);
+    flex-direction: column;
+    margin: var(--theme-wide-spacing, 10px) 0;
+    font-weight: bold;
   }
   label > span {
-    margin: auto;
     font-size: small;
   }
-  label > input {
-    flex: 1;
-    margin-left: var(--theme-common-spacing, 5px);
-  }
-  input {
+  input,
+  select {
     border: none;
     border-bottom: 1px solid var(--theme-darker-color);
     background-color: transparent;
     color: var(--theme-darker-color);
     outline: none;
+  }
+  textarea {
+    min-height: 15vh;
+    background-color: transparent;
+    border: 1px solid var(--theme-darker-color);
+    border-radius: var(--theme-common-radius, 5px);
+    color: var(--theme-darker-color);
+    outline: none;
+    resize: none;
   }
 `

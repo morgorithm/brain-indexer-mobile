@@ -71,19 +71,22 @@ export class SimpleDataList extends LitElement {
           margin: auto var(--theme-common-spacing, 5px);
         }
         .detail-card {
+          display: flex;
+          overflow: hidden;
           height: 0px;
-          min-height: 0;
-          opacity: 0;
-          transition: all 0.3s ease-out 0.1s;
-        }
-        .detail-card[opened] {
-          min-height: 10vh;
-          opacity: 100%;
           background-color: var(--theme-dark-color);
           border-radius: var(--theme-common-radius, 5px);
-          margin-top: var(--theme-common-spacing, 5px);
+
+          transition: height 0.3s ease-out 0.1s;
+        }
+        .detail-card[opened] {
+          height: 15vh;
+          transition: height 0.3s ease-out 0.1s;
+        }
+        .detail-content {
+          flex: 1;
+          overflow: auto;
           padding: var(--theme-common-spacing, 5px);
-          transition: all 0.3s ease-out 0.1s;
         }
         .inner-button-container {
           display: flex;
@@ -158,12 +161,14 @@ export class SimpleDataList extends LitElement {
             </div>
 
             <div class="detail-card" ?opened="${selected}">
-              ${detailFields.map(
-                ({ name, icon }: ListField) => html`
-                  ${icon ? html`<span class="icon"><mwc-icon>${icon}</mwc-icon></span>` : ''}
-                  <span class="detail-field">${item[name]}</span>
-                `
-              )}
+              <div class="detail-content">
+                ${detailFields.map(
+                  ({ name, icon }: ListField) => html`
+                    ${icon ? html`<span class="icon"><mwc-icon>${icon}</mwc-icon></span>` : ''}
+                    <span class="detail-field">${item[name]}</span>
+                  `
+                )}
+              </div>
             </div>
 
             ${this.editable
@@ -193,14 +198,14 @@ export class SimpleDataList extends LitElement {
   }
 
   onAddButtonClick() {
-    this.dispatchEvent(new CustomEvent('addButtonClick'))
+    this.dispatchEvent(new CustomEvent('addButtonClick', { composed: true }))
   }
 
   onEditButtonClick(data: Record<string, any>) {
-    this.dispatchEvent(new CustomEvent('editButtonClick', { detail: { data } }))
+    this.dispatchEvent(new CustomEvent('editButtonClick', { detail: { data }, composed: true }))
   }
 
   onDeleteButtonClick(data: Record<string, any>) {
-    this.dispatchEvent(new CustomEvent('deleteButtonClick', { detail: { data } }))
+    this.dispatchEvent(new CustomEvent('deleteButtonClick', { detail: { data }, composed: true }))
   }
 }

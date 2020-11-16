@@ -8,7 +8,7 @@ export class Category {
   constructor({ id, name, itemCnt }: Category) {
     if (id) this.id = Number(id)
     if (name) this.name = name
-    if (itemCnt) this.itemCnt = itemCnt
+    if (itemCnt) this.itemCnt = Number(itemCnt)
   }
 }
 
@@ -30,7 +30,7 @@ export class CategoryEntity extends TransactionHelper<Category> {
 
   protected async beforeDelete(key: number) {
     const category: Category = await this.findOne(key)
-    if (!category?.itemCnt || category.itemCnt > 0) {
+    if (category.itemCnt) {
       throw new Error(`it's being referenced by ${category.itemCnt} number(s) of card(s)`)
     }
   }

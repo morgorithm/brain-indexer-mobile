@@ -113,10 +113,10 @@ export abstract class TransactionHelper<T> extends CRUDHooks<T> {
     }
   }
 
-  async delete(key: string): Promise<void> {
+  async delete(key: string | number): Promise<void> {
     try {
-      const objectStore: IDBObjectStore = await this.getObejctStore('readwrite')
       await this.beforeDelete(key)
+      const objectStore: IDBObjectStore = await this.getObejctStore('readwrite')
       const request: IDBRequest = objectStore.delete(key)
       await this.commonResultHandler(request)
       await this.afterDelete()

@@ -38,6 +38,7 @@ export class PageCards extends Page {
       },
       {
         name: 'category',
+        hideOnList: true,
         options: {
           type: FieldTypes.Selector,
           options: categories.map((c: Category) => {
@@ -59,7 +60,16 @@ export class PageCards extends Page {
   }
 
   async fetchCards(): Promise<void> {
-    this.data = await new CardEntity().find()
+    const cards: Card[] = await new CardEntity().find()
+
+    this.data = cards.map((card: Card) => {
+      return {
+        id: card.id,
+        name: `${card.name} - ${(card.category as Category).name}`,
+        category: (card.category as Category).name,
+        description: card.description,
+      }
+    })
   }
 
   async saveCard(e: CustomEvent): Promise<void> {
@@ -74,9 +84,9 @@ export class PageCards extends Page {
 
   async deleteCard(e: CustomEvent): Promise<void> {
     try {
-      const { name }: Card = new Card(e.detail.data)
-      if (name) {
-        await new CardEntity().delete(name)
+      const { id }: Card = new Card(e.detail.data)
+      if (id) {
+        await new CardEntity().delete(id)
         this.fetchCards()
       }
     } catch (e) {

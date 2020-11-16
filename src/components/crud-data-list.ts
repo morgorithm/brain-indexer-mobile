@@ -10,6 +10,7 @@ import { ListFieldSet } from './simple-data-list'
 
 export interface Field {
   name: string
+  hidden?: boolean
   icon?: string
   type?: FieldTypes
   options?: FieldOption
@@ -57,7 +58,7 @@ export class CRUDDataList extends LitElement {
         @editButtonClick="${this.onEditButtonClick}"
       ></simple-data-list>
 
-      <form-popup .fields="${formFields}" .popupOption="${popupOption}"></form-popup>
+      <form-popup title="${this.title}" .fields="${formFields}" .popupOption="${popupOption}"></form-popup>
     `
   }
 
@@ -70,7 +71,10 @@ export class CRUDDataList extends LitElement {
       (field: Field): FormField => {
         return {
           name: field.name,
-          option: field.options || {},
+          option: {
+            ...(field.options || {}),
+            hidden: field.hidden,
+          },
         }
       }
     )
@@ -78,6 +82,8 @@ export class CRUDDataList extends LitElement {
 
   private convertFieldsToListFieldSet(fields: Field[]): ListFieldSet {
     if (fields.length) {
+      fields = fields.filter((field: Field) => !field.hidden)
+
       return {
         keyField: { name: fields[0].name, icon: fields[0].icon || '' },
         detailFields: fields.slice(1).map((field: Field) => {

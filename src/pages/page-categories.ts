@@ -9,7 +9,11 @@ import { Page } from './page'
 
 @customElement('page-categories')
 export class PageCategories extends Page {
-  @property({ type: Array }) fields: Field[] = [{ name: 'name' }, { name: 'description' }]
+  @property({ type: Array }) fields: Field[] = [
+    { name: 'id', hidden: true },
+    { name: 'name' },
+    { name: 'itemCnt', hidden: true },
+  ]
   @property({ type: Array }) data: Record<string, any>[] = []
 
   render(): TemplateResult {
@@ -50,8 +54,8 @@ export class PageCategories extends Page {
   async deleteCategory(e: CustomEvent): Promise<void> {
     try {
       const category: Category = new Category(e.detail.data)
-      if (category.name) {
-        await new CategoryEntity().delete(category.name)
+      if (category.id) {
+        await new CategoryEntity().delete(category.id)
         this.fetchCategories()
       }
     } catch (e) {
