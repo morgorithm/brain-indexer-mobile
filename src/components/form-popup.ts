@@ -3,7 +3,6 @@ import './button-bar'
 import { CSSResult, LitElement, PropertyValues, TemplateResult, css, customElement, html, property } from 'lit-element'
 
 import { Button } from './button-bar'
-import { Field } from './crud-data-list'
 import { commonStyle } from '../assets/styles/common-style'
 
 export enum FieldTypes {
@@ -127,7 +126,7 @@ export class FormPopup extends LitElement {
       <div id="popup-modal" ?opened="${this.isOpened}" @click="${this.close.bind(this)}">
         <div id="popup" @click="${(e: Event) => e.stopPropagation()}">
           ${this.title ? html`<span class="popup-title">${this.title}</span>` : ''}
-          <form class="form" @submit="${(e: Event) => e.preventDefault()}">
+          <form class="form" @submit="${(e: Event) => e.preventDefault()}" @keypress="${this.onKeypressHandler}">
             <fieldset>
               ${fields.map((field: FormField) => {
                 const { name, option }: FormField = field
@@ -294,6 +293,16 @@ export class FormPopup extends LitElement {
     if (changedProps.has('isOpened') && this.isOpened) {
       await this.updateComplete
       this.focus()
+    }
+  }
+
+  private onKeypressHandler(e: KeyboardEvent) {
+    const buttons: Button[] = this.popupOption?.buttons || []
+    const button: Button | undefined = buttons.find(
+      (button: Button) => button.actionKey?.toLowerCase() === e.key.toLowerCase()
+    )
+    if (button?.action) {
+      button.action.apply(this)
     }
   }
 

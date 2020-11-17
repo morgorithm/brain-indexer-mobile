@@ -21,8 +21,9 @@ export class SimpleDataList extends LitElement {
   @property({ type: Boolean }) addable: boolean = false
   @property({ type: Boolean }) editable: boolean = false
   @property({ type: Array }) data: Record<string, any>[] = []
+  @property({ type: Boolean }) private checkAll: boolean = false
 
-  @property({ type: Number }) selectedIdx?: number
+  @property({ type: Number }) openedIdx?: number
 
   static get styles(): CSSResult[] {
     return [
@@ -111,6 +112,8 @@ export class SimpleDataList extends LitElement {
 
   render(): TemplateResult {
     const fieldSet: ListFieldSet = this.fieldSet || { keyField: { name: '' } }
+    const addable: boolean = this.addable || false
+    const selectable: boolean = this.selectable || false
     const data: Record<string, any>[] = this.data || []
 
     const { name, icon }: ListField = fieldSet.keyField
@@ -120,21 +123,27 @@ export class SimpleDataList extends LitElement {
       <ul>
         <div class="list-header">
           <span class="title">${this.title}</span>
-          ${this.addable ? html` <mwc-icon @click="${this.onAddButtonClick}">add_circle_outline</mwc-icon> ` : ''}
+          ${addable ? html` <mwc-icon @click="${this.onAddButtonClick}">add_circle_outline</mwc-icon> ` : ''}
+          ${selectable
+            ? html`<mwc-icon @click="${this.selectAll}">${this.checkAll ? 'cancel' : 'check_circle'}</mwc-icon>`
+            : ''}
         </div>
 
         ${data.map((item: Record<string, any>, itemIdx: number) => {
-          const selected: boolean = this.selectedIdx === itemIdx
+          const opened: boolean = this.openedIdx === itemIdx
 
           return html` <li
+            ?selected="${this.checkAll}"
             @click="${(e: Event) => {
-              if (this.selectable) {
+              if (selectable) {
                 const listItem: HTMLLIElement = e.currentTarget as HTMLLIElement
                 const isSelected: boolean = listItem.hasAttribute('selected')
                 if (isSelected) {
                   listItem.removeAttribute('selected')
+                  this.dispatchEvent(new CustomEvent('selectedItemChanged'))
                 } else {
                   listItem.setAttribute('selected', '')
+                  this.dispatchEvent(new CustomEvent('selectedItemChanged'))
                 }
               }
             }}"
@@ -148,19 +157,19 @@ export class SimpleDataList extends LitElement {
                     <mwc-icon
                       @click="${(e: Event) => {
                         e.stopPropagation()
-                        if (selected) {
-                          this.selectedIdx = -1
+                        if (opened) {
+                          this.openedIdx = -1
                         } else {
-                          this.selectedIdx = itemIdx
+                          this.openedIdx = itemIdx
                         }
                       }}"
-                      >${selected ? 'arrow_drop_up' : 'arrow_drop_down'}</mwc-icon
+                      >${opened ? 'arrow_drop_up' : 'arrow_drop_down'}</mwc-icon
                     >
                   `
                 : ''}
             </div>
 
-            <div class="detail-card" ?opened="${selected}">
+            <div class="detail-card" ?opened="${opened}">
               <div class="detail-content">
                 ${detailFields.map(
                   ({ name, icon }: ListField) => html`
@@ -195,6 +204,23 @@ export class SimpleDataList extends LitElement {
         })}
       </ul>
     `
+  }
+
+  private async selectAll() {
+    this.checkAll = !this.checkAll
+    await this.updateComplete
+    this.dispatchEvent(new CustomEvent('selectedItemChanged'))
+  }
+
+  get selectedItems(): HTMLLIElement[] {
+    return Array.from(this.renderRoot.querySelectorAll('li[selected]'))
+  }
+
+  get selectedData(): Record<string, any>[] {
+    const selectedIndexes: number[] = this.selectedItems
+      .filter((li: HTMLLIElement) => li.hasAttribute('selected'))
+      .map((li: HTMLLIElement, idx) => idx)
+    return this.data.filter((_: Record<string, any>, idx: number) => selectedIndexes.indexOf(idx) >= 0)
   }
 
   onAddButtonClick() {

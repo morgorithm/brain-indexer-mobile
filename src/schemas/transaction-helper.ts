@@ -46,7 +46,7 @@ export abstract class TransactionHelper<T> extends CRUDHooks<T> {
     })
   }
 
-  private async getObejctStore(
+  async getObejctStore(
     mode: 'readwrite' | 'readonly' | 'versionchange' | undefined,
     store?: string
   ): Promise<IDBObjectStore> {

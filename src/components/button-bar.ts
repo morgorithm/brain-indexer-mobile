@@ -1,4 +1,5 @@
-import { CSSResult, customElement, html, LitElement, property, TemplateResult } from 'lit-element'
+import { CSSResult, LitElement, TemplateResult, customElement, html, property } from 'lit-element'
+
 import { commonStyle } from '../assets/styles/common-style'
 
 export const enum ButtonTypes {
@@ -17,6 +18,7 @@ export interface Button {
   name?: string
   icon?: string
   type: ButtonTypes
+  actionKey?: string
   action?: () => void
   option?: ButtonOption
 }

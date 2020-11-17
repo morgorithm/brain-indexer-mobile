@@ -38,7 +38,6 @@ export class PageCards extends Page {
       },
       {
         name: 'category',
-        hideOnList: true,
         options: {
           type: FieldTypes.Selector,
           options: categories.map((c: Category) => {

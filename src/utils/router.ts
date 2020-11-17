@@ -2,7 +2,7 @@ export class Router {
   public title: string = ''
   public route: string = ''
 
-  navigate(title: string, route: string): void {
+  navigate(title: string, route: string, data: any = ''): void {
     document.dispatchEvent(
       new CustomEvent('before-navigate', {
         detail: {
@@ -12,7 +12,7 @@ export class Router {
       })
     )
 
-    history.pushState('', title, route ? route : '/')
+    history.pushState(data, title, route ? route : '/')
 
     this.title = title
     this.route = route
