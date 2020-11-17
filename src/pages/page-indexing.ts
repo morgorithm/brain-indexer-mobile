@@ -1,6 +1,6 @@
+import { Card, CardEntity } from '../schemas'
 import { TemplateResult, customElement, html, property } from 'lit-element'
 
-import { Card } from '../schemas'
 import { Page } from './page'
 
 @customElement('page-indexing')
@@ -23,8 +23,11 @@ export class PageIndexing extends Page {
     }
   }
 
-  private displayRandomCard() {
+  private async displayRandomCard() {
     const categoryId: number = this.randomCategoryId()
+    const cardEntity: CardEntity = new CardEntity()
+    const objectStore: IDBObjectStore = await cardEntity.getObejctStore('readonly')
+    objectStore.index
   }
 
   private randomCategoryId(): number {
