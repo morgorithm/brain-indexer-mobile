@@ -36,6 +36,6 @@ export class Page404 extends Page {
   }
 
   constructor() {
-    super('Page Not Found', '404', true)
+    super('404', true)
   }
 }

@@ -1,41 +1,45 @@
-import { Card, CardEntity } from '../schemas'
+import { Card, CardEntity, Category, CategoryEntity } from '../schemas'
 import { TemplateResult, customElement, html, property } from 'lit-element'
 
 import { Page } from './page'
 
 @customElement('page-indexing')
 export class PageIndexing extends Page {
-  @property({ type: Array }) categoryIds: number[] = []
-  @property({ type: Object }) card: Card | undefined = {}
+  categoryIds: number[] = []
+  @property({ type: Object }) category?: Category
+
+  @property({ type: Object }) card?: Card
 
   render(): TemplateResult {
-    return html` <h2>Indexing</h2> `
+    return html`<div>
+      <span class="category">${this.category?.name}</span>
+      <span class="name">${this.card?.name}</span>
+    </div>`
   }
 
   constructor() {
-    super('', 'indexing')
+    super('indexing')
   }
 
   pageActivated(): void {
-    this.categoryIds = history.state
+    this.categoryIds = JSON.parse(this.params?.categoryIds)
+
     if (this.categoryIds?.length) {
-      this.displayRandomCard()
+      this.fetchCard()
     }
   }
 
-  private async displayRandomCard() {
-    const categoryId: number = this.randomCategoryId()
-    const cardEntity: CardEntity = new CardEntity()
-    const objectStore: IDBObjectStore = await cardEntity.getObejctStore('readonly')
-    objectStore.index
+  private async fetchCard() {
+    const categoryId: number = this.pickRandomly(this.categoryIds)
+    const cards: Card[] = await new CardEntity().getCardsByCategoryId(categoryId)
+    this.category = await new CategoryEntity().findOne(categoryId)
+    this.card = this.pickRandomly(cards)
   }
 
-  private randomCategoryId(): number {
-    if (this.categoryIds?.length) {
-      const randomIdx: number = Math.floor(Math.random() * this.categoryIds.length)
-      return this.categoryIds[randomIdx]
-    } else {
-      throw new Error('No category id list')
+  private pickRandomly(items: any[]): any {
+    if (items?.length) {
+      const randomIdx: number = Math.floor(Math.random() * items.length)
+      return items[randomIdx]
     }
   }
 }

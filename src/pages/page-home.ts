@@ -47,7 +47,7 @@ export class PageHome extends Page {
   }
 
   constructor() {
-    super('Brain Indexer', '')
+    super('')
   }
 
   get dataList(): SimpleDataList | null {
@@ -81,7 +81,7 @@ export class PageHome extends Page {
             type: ButtonTypes.Positive,
             name: 'start',
             icon: 'school',
-            action: () => new Router().navigate('', 'indexing', categoryIds),
+            action: () => new Router().navigate('Indexing', `indexing`, { categoryIds }),
           },
         ],
       }

@@ -46,7 +46,7 @@ export abstract class TransactionHelper<T> extends CRUDHooks<T> {
     })
   }
 
-  async getObejctStore(
+  protected async getObejctStore(
     mode: 'readwrite' | 'readonly' | 'versionchange' | undefined,
     store?: string
   ): Promise<IDBObjectStore> {
@@ -145,7 +145,7 @@ export abstract class TransactionHelper<T> extends CRUDHooks<T> {
     }
   }
 
-  private commonResultHandler(request: IDBRequest): Promise<any> {
+  protected commonResultHandler(request: IDBRequest): Promise<any> {
     return new Promise((resolve, reject) => {
       request.onsuccess = () => resolve(request.result)
       request.onerror = () => reject(request.error)

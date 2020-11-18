@@ -41,9 +41,13 @@ export class LayoutContent extends LitElement {
   }
 
   onAfterNavigate(e: Event): void {
-    const { title, route } = (e as CustomEvent).detail
+    let { route, params }: { route: string; params: Record<string, any> } = (e as CustomEvent).detail
 
     this.hideAllPages()
+
+    if (params) {
+      route = route.split('?')[0]
+    }
 
     const page: Page | undefined = this.pages.find((page: Page) => page.route === route)
     if (page) {

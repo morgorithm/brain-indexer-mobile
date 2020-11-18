@@ -1,6 +1,7 @@
 import { CSSResult, LitElement, css, property } from 'lit-element'
 import { FooterButtonContent, FooterMessageContent } from '../layouts/layout-footer'
 
+import { Router } from '../utils'
 import { commonStyle } from '../assets/styles/common-style'
 
 export interface PageInfo {
@@ -11,8 +12,9 @@ export interface PageInfo {
 }
 
 export class Page extends LitElement implements PageInfo {
-  @property({ type: String }) title: string
+  @property({ type: String }) title: string = ''
   @property({ type: String }) route: string
+  @property({ type: Object }) params?: Record<string, any>
   @property({ type: Object }) footerContent?: FooterButtonContent | FooterMessageContent
   @property({ type: Boolean }) isFallbackPage: boolean = false
 
@@ -31,16 +33,26 @@ export class Page extends LitElement implements PageInfo {
     ]
   }
 
-  constructor(title: string, route: string, isFallbackPage: boolean = false) {
+  constructor(route: string, isFallbackPage: boolean = false) {
     super()
-    this.title = title
     this.route = route
+    this.params = Router.getURLSearchParams()
     this.isFallbackPage = isFallbackPage
     this.style.display = 'none'
 
+    if (location.pathname.replace(/^\//, '') === this.route) {
+      this.activated()
+    }
+
     document.addEventListener('after-navigate', (event: Event) => {
-      const { title, route }: { title: string; route: string } = (event as CustomEvent).detail
+      const {
+        title,
+        route,
+        params,
+      }: { title: string; route: string; params: Record<string, any> } = (event as CustomEvent).detail
       if (this.route === route) {
+        this.title = title
+        this.params = params
         this.activated()
       }
     })

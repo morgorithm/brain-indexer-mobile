@@ -60,4 +60,10 @@ export class CardEntity extends TransactionHelper<Card> {
     }
     await new CategoryEntity().save(category)
   }
+
+  async getCardsByCategoryId(categoryId: number): Promise<Card[]> {
+    const objectStore: IDBObjectStore = await this.getObejctStore('readonly')
+    const request: IDBRequest = objectStore.index('category').getAll(categoryId)
+    return await this.commonResultHandler(request)
+  }
 }
