@@ -7,6 +7,7 @@ import { commonStyle } from '../assets/styles/common-style'
 export interface PageInfo {
   title: string
   route: string
+  params?: Record<string, any>
   footerContent?: FooterButtonContent | FooterMessageContent
   isFallbackPage?: boolean
 }
@@ -39,10 +40,6 @@ export class Page extends LitElement implements PageInfo {
     this.params = Router.getURLSearchParams()
     this.isFallbackPage = isFallbackPage
     this.style.display = 'none'
-
-    if (location.pathname.replace(/^\//, '') === this.route) {
-      this.activated()
-    }
 
     document.addEventListener('after-navigate', (event: Event) => {
       const {
