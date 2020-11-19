@@ -1,6 +1,6 @@
 import '@material/mwc-icon'
 
-import { CSSResult, LitElement, TemplateResult, css, customElement, html, property } from 'lit-element'
+import { CSSResult, LitElement, PropertyValues, TemplateResult, css, customElement, html, property } from 'lit-element'
 
 import { commonStyle } from '../assets/styles/common-style'
 
@@ -61,13 +61,10 @@ export class LayoutHeader extends LitElement {
 
   constructor() {
     super()
-    document.addEventListener('after-navigate', this.onAfterNavicate.bind(this))
+    document.addEventListener('render-header-content', this.renderHeaderContent.bind(this))
   }
 
-  onAfterNavicate(event: Event) {
-    const { title }: { title: string } = (event as CustomEvent).detail
-    if (title) {
-      this.title = title
-    }
-  }
+  renderHeaderContent(e: Event): void {
+    const { title }: { title: string } = (e as CustomEvent).detail
+    this.title = title
 }

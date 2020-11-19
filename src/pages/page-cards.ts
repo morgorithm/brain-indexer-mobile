@@ -24,7 +24,7 @@ export class PageCards extends Page {
   }
 
   constructor() {
-    super('cards')
+    super('Cards', 'cards')
   }
 
   async pageActivated(): Promise<void> {

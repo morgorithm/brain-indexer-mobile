@@ -17,6 +17,7 @@ export class Page extends LitElement implements PageInfo {
   @property({ type: String }) route: string
   @property({ type: Object }) params?: Record<string, any>
   @property({ type: Object }) footerContent?: FooterButtonContent | FooterMessageContent
+  @property({ type: Boolean }) isHomePage: boolean = false
   @property({ type: Boolean }) isFallbackPage: boolean = false
 
   pageActivated(): void {}
@@ -34,8 +35,9 @@ export class Page extends LitElement implements PageInfo {
     ]
   }
 
-  constructor(route: string, isFallbackPage: boolean = false) {
+  constructor(title: string, route: string, isFallbackPage: boolean = false) {
     super()
+    this.title = title
     this.route = route
     this.params = Router.getURLSearchParams()
     this.isFallbackPage = isFallbackPage
@@ -43,16 +45,18 @@ export class Page extends LitElement implements PageInfo {
 
     document.addEventListener('after-navigate', (event: Event) => {
       const {
-        title,
         route,
         params,
       }: { title: string; route: string; params: Record<string, any> } = (event as CustomEvent).detail
       if (this.route === route) {
-        this.title = title
         this.params = params
         this.activated()
       }
     })
+
+    if (this.route === location.pathname.replace(/^\//, '')) {
+      new Router().navigate(this.title, this.route, this.params)
+    }
   }
 
   get info(): PageInfo {
@@ -71,6 +75,12 @@ export class Page extends LitElement implements PageInfo {
   }
 
   activated(): void {
+    document.dispatchEvent(
+      new CustomEvent('render-header-content', {
+        detail: { title: this.title },
+      })
+    )
+
     document.dispatchEvent(
       new CustomEvent('render-footer-content', {
         detail: { content: this.footerContent },

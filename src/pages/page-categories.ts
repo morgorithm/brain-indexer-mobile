@@ -30,7 +30,7 @@ export class PageCategories extends Page {
   }
 
   constructor() {
-    super('categories')
+    super('Categories', 'categories')
   }
 
   async pageActivated(): Promise<void> {

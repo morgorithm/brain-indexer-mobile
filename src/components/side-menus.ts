@@ -98,7 +98,7 @@ export class SideMenus extends LitElement {
               <div
                 class="menu-item"
                 @click="${() => this.menuClick(menu)}"
-                ?activated="${location.pathname.split('/')[1] === menu.route}"
+                ?activated="${location.pathname.replace(/^\//, '') === menu.route}"
               >
                 <mwc-icon>${menu.icon}</mwc-icon>
                 <span>${menu.title}</span>
@@ -117,15 +117,6 @@ export class SideMenus extends LitElement {
     super()
     this.menus = menus
     document.addEventListener('after-navigate', () => this.requestUpdate())
-  }
-
-  firstUpdated() {
-    const activatedMenu: Menu | undefined = this.menus.find(
-      (menu: Menu) => location.pathname.split('/')[1] === menu.route
-    )
-    if (activatedMenu) {
-      this.menuClick(activatedMenu)
-    }
   }
 
   menuClick(menu: Menu) {

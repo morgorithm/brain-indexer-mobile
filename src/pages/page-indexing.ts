@@ -11,14 +11,19 @@ export class PageIndexing extends Page {
   @property({ type: Object }) card?: Card
 
   render(): TemplateResult {
-    return html`<div>
-      <span class="category">${this.category?.name}</span>
-      <span class="name">${this.card?.name}</span>
+    return html`<div class="container">
+      <div class="top-part">
+        <span class="category">${this.category?.name}</span>
+        <span class="name">${this.card?.name}</span>
+      </div>
+      <div class="bottom-part">
+        <span class="description">${this.card?.description}</span>
+      </div>
     </div>`
   }
 
   constructor() {
-    super('indexing')
+    super('Indexing', 'indexing')
   }
 
   pageActivated(): void {

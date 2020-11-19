@@ -47,7 +47,7 @@ export class PageHome extends Page {
   }
 
   constructor() {
-    super('')
+    super('Brain Indexing', '')
   }
 
   get dataList(): SimpleDataList | null {

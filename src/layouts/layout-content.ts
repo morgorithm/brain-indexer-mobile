@@ -1,12 +1,11 @@
 import { CSSResult, LitElement, TemplateResult, css, customElement, html, property } from 'lit-element'
 
 import { Page } from '../pages/page'
+import { Router } from '../utils'
 import { commonStyle } from '../assets/styles/common-style'
 
 @customElement('layout-content')
 export class LayoutContent extends LitElement {
-  @property({ type: String }) title: string = ''
-  @property({ type: String }) route: string = ''
   @property({ type: Object }) activatedPage: object | null = null
 
   static get styles(): CSSResult[] {
@@ -32,8 +31,20 @@ export class LayoutContent extends LitElement {
     document.addEventListener('after-navigate', this.onAfterNavigate.bind(this))
   }
 
+  firstUpdated(): void {
+    const currentRoute: string = location.pathname.replace(/^\//, '')
+    const page: Page =
+      this.pages.find((page: Page) => page.route === currentRoute) || this.homePage || this.page404 || this.pages[0]
+    const { title, route } = page
+    new Router().navigate(title, route, Router.getURLSearchParams())
+  }
+
   get pages(): Page[] {
     return Array.from(this.children) as Page[]
+  }
+
+  get homePage(): Page | undefined {
+    return this.pages.find((page: Page) => page.isHomePage)
   }
 
   get page404(): Page | undefined {
@@ -62,6 +73,12 @@ export class LayoutContent extends LitElement {
   }
 
   hideAllPages() {
-    this.pages.forEach((page: Page) => page.hidePage())
+    this.pages.forEach((page: Page) => {
+      if (page?.hidePage) {
+        page.hidePage()
+      } else {
+        console.log(page)
+      }
+    })
   }
 }
