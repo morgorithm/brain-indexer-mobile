@@ -1,4 +1,4 @@
-import { CSSResult, LitElement, css, property } from 'lit-element'
+import { CSSResult, LitElement, PropertyValues, css, property } from 'lit-element'
 import { FooterButtonContent, FooterMessageContent } from '../layouts/layout-footer'
 
 import { Router } from '../utils'
@@ -21,6 +21,7 @@ export class Page extends LitElement implements PageInfo {
   @property({ type: Boolean }) isFallbackPage: boolean = false
 
   pageActivated(): void {}
+  pageUpdated(changedProps: PropertyValues): void {}
 
   static get styles(): CSSResult[] {
     return [
@@ -66,27 +67,40 @@ export class Page extends LitElement implements PageInfo {
     }
   }
 
+  updated(changedProps: PropertyValues) {
+    if (this.route === location.pathname.replace(/^\//, '')) {
+      this.pageUpdated(changedProps)
+    }
+  }
+
   showPage(): void {
     this.style.display = 'flex'
+    this.activated()
   }
 
   hidePage(): void {
     this.style.display = 'none'
   }
 
-  activated(): void {
+  dispatchHeaderRendering(): void {
     document.dispatchEvent(
       new CustomEvent('render-header-content', {
         detail: { title: this.title },
       })
     )
+  }
 
+  dispatchFooterRendering(): void {
     document.dispatchEvent(
       new CustomEvent('render-footer-content', {
         detail: { content: this.footerContent },
       })
     )
+  }
 
+  activated(): void {
+    this.dispatchHeaderRendering()
+    this.dispatchFooterRendering()
     this.pageActivated()
   }
 }

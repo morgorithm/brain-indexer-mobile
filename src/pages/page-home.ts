@@ -1,22 +1,33 @@
+import { Button, ButtonTypes } from '../components/button-bar'
 import { CSSResult, TemplateResult, css, customElement, html, property } from 'lit-element'
 import { Category, CategoryEntity } from '../schemas'
 import { FooterButtonContent, FooterTypes } from '../layouts/layout-footer'
 import { ListFieldSet, SimpleDataList } from '../components/simple-data-list'
 
-import { ButtonTypes } from '../components/button-bar'
 import { Page } from './page'
 import { Router } from '../utils'
 
 @customElement('page-home')
 export class PageHome extends Page {
+  private challengeButton: Button = {
+    type: ButtonTypes.Negative,
+    name: 'challenge',
+    icon: 'military_tech',
+    action: () => new Router().navigate('Chanllenge', 'challenge'),
+  }
+
   @property({ type: Object }) fieldSet: ListFieldSet = {
     keyField: {
       name: 'nameAndCount',
     },
   }
   @property({ type: Array }) data: Record<string, any>[] = []
-
   @property({ type: Array }) selectedData: Record<string, any>[] = []
+
+  @property({ type: Object }) footerContent?: FooterButtonContent = {
+    type: FooterTypes.Button,
+    buttons: [this.challengeButton],
+  }
 
   static get styles(): CSSResult[] {
     return [
@@ -72,30 +83,20 @@ export class PageHome extends Page {
 
   selectedItemChanged(): void {
     const selectedCategories: Record<string, any>[] = this.dataList?.selectedData || []
+    this.footerContent = {
+      type: FooterTypes.Button,
+      buttons: [this.challengeButton],
+    }
     if (selectedCategories.length) {
       const categoryIds: number[] = selectedCategories.map((category: Record<string, any>) => category.id)
-      const footerButtonContent: FooterButtonContent = {
-        type: FooterTypes.Button,
-        buttons: [
-          {
-            type: ButtonTypes.Positive,
-            name: 'start',
-            icon: 'school',
-            action: () => new Router().navigate('Indexing', `indexing`, { categoryIds }),
-          },
-        ],
-      }
-      this.renderFooterButtons(footerButtonContent)
-    } else {
-      this.renderFooterButtons()
-    }
-  }
-
-  renderFooterButtons(content?: FooterButtonContent): void {
-    document.dispatchEvent(
-      new CustomEvent('render-footer-content', {
-        detail: { content },
+      this.footerContent.buttons.push({
+        type: ButtonTypes.Positive,
+        name: 'training',
+        icon: 'school',
+        action: () => new Router().navigate('Training', `training`, { categoryIds }),
       })
-    )
+    }
+
+    this.dispatchFooterRendering()
   }
 }

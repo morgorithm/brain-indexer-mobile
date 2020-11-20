@@ -19,6 +19,11 @@ export const Menus: Menu[] = [
     route: 'categories',
   },
   {
+    icon: 'insights',
+    title: 'Statistics',
+    route: 'statistics',
+  },
+  {
     icon: 'settings',
     title: 'Setting',
     route: 'settings',

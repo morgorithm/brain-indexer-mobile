@@ -38,7 +38,7 @@ export class SideMenus extends LitElement {
           width: 80vw;
           height: 100vh;
           z-index: 2;
-          transition: left 0.3s ease-out 0.1s;
+          transition: left 0.3s ease-out;
           display: flex;
           flex-direction: column;
         }

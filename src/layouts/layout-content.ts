@@ -18,6 +18,12 @@ export class LayoutContent extends LitElement {
           flex-direction: column;
           overflow: hidden;
         }
+        main {
+          display: flex;
+          flex-direction: column;
+          flex: 1;
+          overflow: hidden;
+        }
       `,
     ]
   }
@@ -76,8 +82,6 @@ export class LayoutContent extends LitElement {
     this.pages.forEach((page: Page) => {
       if (page?.hidePage) {
         page.hidePage()
-      } else {
-        console.log(page)
       }
     })
   }

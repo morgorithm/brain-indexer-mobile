@@ -67,4 +67,5 @@ export class LayoutHeader extends LitElement {
   renderHeaderContent(e: Event): void {
     const { title }: { title: string } = (e as CustomEvent).detail
     this.title = title
+  }
 }

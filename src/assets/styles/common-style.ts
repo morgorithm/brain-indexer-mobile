@@ -18,7 +18,6 @@ export const commonStyle: CSSResult = css`
   }
   button {
     min-width: 20vw;
-    max-width: 20vw;
     display: flex;
     border: none;
     color: white;
