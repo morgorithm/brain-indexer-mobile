@@ -24,7 +24,7 @@ export const commonStyle: CSSResult = css`
     text-transform: capitalize;
     border-radius: var(--theme-common-radius, 5px);
     padding: var(--theme-common-spacing, 5px);
-    box-shadow: 1px 1px rgba(0, 0, 0, 0.5);
+    box-shadow: var(--theme-common-shadow);
     outline: none;
     margin: auto 0px;
     margin-left: var(--theme-common-spacing, 5px);
@@ -49,6 +49,9 @@ export const commonStyle: CSSResult = css`
   }
   button:active > mwc-icon {
     color: gray;
+  }
+  button > span {
+    margin: auto;
   }
   form {
     flex: 1;

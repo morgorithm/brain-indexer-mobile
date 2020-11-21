@@ -24,10 +24,7 @@ export class PageHome extends Page {
   @property({ type: Array }) data: Record<string, any>[] = []
   @property({ type: Array }) selectedData: Record<string, any>[] = []
 
-  @property({ type: Object }) footerContent?: FooterButtonContent = {
-    type: FooterTypes.Button,
-    buttons: [this.challengeButton],
-  }
+  @property({ type: Object }) footerContent?: FooterButtonContent
 
   static get styles(): CSSResult[] {
     return [
@@ -83,18 +80,21 @@ export class PageHome extends Page {
 
   selectedItemChanged(): void {
     const selectedCategories: Record<string, any>[] = this.dataList?.selectedData || []
-    this.footerContent = {
-      type: FooterTypes.Button,
-      buttons: [this.challengeButton],
-    }
     if (selectedCategories.length) {
       const categoryIds: number[] = selectedCategories.map((category: Record<string, any>) => category.id)
-      this.footerContent.buttons.push({
-        type: ButtonTypes.Positive,
-        name: 'training',
-        icon: 'school',
-        action: () => new Router().navigate('Training', `training`, { categoryIds }),
-      })
+      this.footerContent = {
+        type: FooterTypes.Button,
+        buttons: [
+          {
+            type: ButtonTypes.Positive,
+            name: 'training',
+            icon: 'school',
+            action: () => new Router().navigate('Training', `training`, { categoryIds }),
+          },
+        ],
+      }
+    } else {
+      this.footerContent = undefined
     }
 
     this.dispatchFooterRendering()

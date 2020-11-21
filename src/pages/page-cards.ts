@@ -50,7 +50,7 @@ export class PageCards extends Page {
       {
         name: 'description',
         options: {
-          type: FieldTypes.Textarea,
+          type: FieldTypes.Markdown,
           required: true,
         },
       },

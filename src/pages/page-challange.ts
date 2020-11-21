@@ -67,12 +67,14 @@ export class PageChallenge extends Page {
           font-size: 5vh;
         }
         .bottom-part {
-          opacity: 0%;
+          position: relative;
+          top: 100%;
           background-color: white;
+          transition: top 0.3s ease-in-out;
         }
         .bottom-part[opened] {
-          opacity: 100%;
-          transition: opacity 0.3s ease-in-out;
+          top: 0;
+          transition: top 0.3s ease-in-out;
         }
       `,
     ]
@@ -106,13 +108,11 @@ export class PageChallenge extends Page {
           type: FooterTypes.Button,
           buttons: [
             {
-              icon: 'mood',
               name: 'I Knew It!',
               type: ButtonTypes.Positive,
               action: this.knewIt.bind(this),
             },
             {
-              icon: 'mood_bad',
               name: 'hmm...',
               type: ButtonTypes.Negative,
               action: this.didNotKnowIt.bind(this),
@@ -124,7 +124,6 @@ export class PageChallenge extends Page {
           type: FooterTypes.Button,
           buttons: [
             {
-              icon: 'sentiment_dissatisfied',
               name: 'I guess...',
               type: ButtonTypes.Neutral,
               action: this.showDescription.bind(this),

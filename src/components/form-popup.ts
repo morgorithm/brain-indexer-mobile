@@ -3,7 +3,10 @@ import './button-bar'
 import { CSSResult, LitElement, PropertyValues, TemplateResult, css, customElement, html, property } from 'lit-element'
 
 import { Button } from './button-bar'
+import MarkdownIt from 'markdown-it'
 import { commonStyle } from '../assets/styles/common-style'
+
+const md: MarkdownIt = new MarkdownIt()
 
 export enum FieldTypes {
   Text,
@@ -14,6 +17,7 @@ export enum FieldTypes {
   Time,
   DateTime,
   Textarea,
+  Markdown,
 }
 
 export interface BasicFieldOption {
@@ -260,6 +264,34 @@ export class FormPopup extends LitElement {
                     `
                     break
 
+                  case FieldTypes.Markdown:
+                    template = html`
+                      <label for="${name}" .hidden="${hidden}">
+                        <span class="label">${name}</span>
+                        <textarea
+                          id="${name}"
+                          name="${name}"
+                          value="${data[name] || defaultValue}"
+                          ?required="${required}"
+                          ?readonly="${!editable}"
+                          @input="${(e: Event) => {
+                            if (e.currentTarget) {
+                              const textarea: HTMLTextAreaElement = e.currentTarget as HTMLTextAreaElement
+                              if (this.preview) {
+                                this.preview.innerHTML = md.render(textarea.value) || ''
+                              }
+                            }
+                          }}"
+                        ></textarea>
+                      </label>
+
+                      <label>
+                        <span class="label">Preview</span>
+                        <div class="preview"></div>
+                      </label>
+                    `
+                    break
+
                   default:
                     template = html` <label for="${name}" .hidden="${hidden}">
                       <span class="label">${name}</span>
@@ -287,6 +319,10 @@ export class FormPopup extends LitElement {
 
   get form(): HTMLFormElement | null {
     return this.renderRoot?.querySelector('form')
+  }
+
+  get preview(): HTMLDivElement | null {
+    return this.renderRoot?.querySelector('div.preview')
   }
 
   async updated(changedProps: PropertyValues): Promise<void> {

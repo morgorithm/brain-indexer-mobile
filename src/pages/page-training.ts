@@ -3,27 +3,27 @@ import { CSSResult, PropertyValues, TemplateResult, css, customElement, html, pr
 import { Card, CardEntity, Category, CategoryEntity } from '../schemas'
 import { FooterButtonContent, FooterTypes } from '../layouts/layout-footer'
 
+import MarkdownIt from 'markdown-it'
 import { Page } from './page'
 import { commonStyle } from '../assets/styles/common-style'
+
+const md: MarkdownIt = new MarkdownIt()
 
 @customElement('page-training')
 export class PageTraining extends Page {
   private guessButton: Button = {
-    icon: 'sentiment_dissatisfied',
     name: 'I guess...',
     type: ButtonTypes.Neutral,
     action: this.showDescription.bind(this),
   }
 
   private knewItButton: Button = {
-    icon: 'mood',
     name: 'I Knew It!',
     type: ButtonTypes.Positive,
     action: this.knewIt.bind(this),
   }
 
   private didNotKnowButton: Button = {
-    icon: 'mood_bad',
     name: 'hmm...',
     type: ButtonTypes.Negative,
     action: this.didNotKnowIt.bind(this),
@@ -73,12 +73,14 @@ export class PageTraining extends Page {
           font-size: 5vh;
         }
         .bottom-part {
-          opacity: 0%;
+          position: relative;
+          top: 100%;
           background-color: white;
+          transition: top 0.3s ease-in-out;
         }
         .bottom-part[opened] {
-          opacity: 100%;
-          transition: opacity 0.3s ease-in-out;
+          top: 0;
+          transition: top 0.3s ease-in-out;
         }
       `,
     ]
@@ -90,14 +92,16 @@ export class PageTraining extends Page {
         <span class="category">${this.category?.name}</span>
         <span class="name">${this.card?.name}</span>
       </div>
-      <div class="bottom-part card" ?opened="${this.openDescriptionCard}">
-        <span class="description">${this.card?.description}</span>
-      </div>
+      <div id="description-card" class="bottom-part card" ?opened="${this.openDescriptionCard}"></div>
     </div>`
   }
 
   constructor() {
     super('Training', 'training')
+  }
+
+  get descCard(): HTMLDivElement | null {
+    return this.renderRoot?.querySelector('#description-card')
   }
 
   pageUpdated(changedProps: PropertyValues) {
@@ -135,6 +139,13 @@ export class PageTraining extends Page {
     const cards: Card[] = await new CardEntity().getCardsByCategoryId(categoryId)
     this.category = await new CategoryEntity().findOne(categoryId)
     this.card = this.pickRandomly(cards)
+    this.renderMarkdown(this.card?.description)
+  }
+
+  private renderMarkdown(description: string = '') {
+    if (this.descCard) {
+      this.descCard.innerHTML = md.render(description)
+    }
   }
 
   private pickRandomly(items: any[]): any {
@@ -145,7 +156,6 @@ export class PageTraining extends Page {
   }
 
   private showDescription() {
-    console.log(this)
     this.openDescriptionCard = true
   }
 

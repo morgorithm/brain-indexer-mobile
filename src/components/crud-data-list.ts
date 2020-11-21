@@ -25,7 +25,6 @@ export class CRUDDataList extends LitElement {
       {
         icon: 'save',
         type: ButtonTypes.Positive,
-        actionKey: 'Enter',
         action: () => {
           if (this.popup?.form) {
             this.dispatchEvent(
