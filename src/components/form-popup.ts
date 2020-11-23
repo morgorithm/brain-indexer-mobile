@@ -99,7 +99,7 @@ export class FormPopup extends LitElement {
           max-height: 80vh;
         }
         #popup-modal[opened] > #popup {
-          width: 80vw;
+          width: 95vw;
         }
         #popup-modal span.popup-title {
           display: none;
@@ -112,6 +112,23 @@ export class FormPopup extends LitElement {
         }
         .form {
           margin: var(--theme-wide-spacing, 10px);
+        }
+        .header {
+          display: flex;
+        }
+        .header > mwc-icon {
+          margin-left: auto;
+          color: var(--theme-darker-color);
+        }
+        .header > mwc-icon:active {
+          color: white;
+        }
+        .preview {
+          background-color: white;
+          min-height: 15vh;
+          border-radius: var(--theme-common-radius, 5px);
+          border: 1px solid var(--theme-darker-color);
+          padding: 2px;
         }
         *[hidden] {
           display: none;
@@ -212,7 +229,7 @@ export class FormPopup extends LitElement {
                           ${appendEmptyOption ? html`<option></option>` : ''}
                           ${options.map(
                             (option: SelectorOption) =>
-                              html`<option .selected="${option.value === data[name]?.value}" value="${option.value}">
+                              html`<option .selected="${option.value === data[name]}" value="${option.value}">
                                 ${option.name}
                               </option>`
                           )}
@@ -267,27 +284,49 @@ export class FormPopup extends LitElement {
                   case FieldTypes.Markdown:
                     template = html`
                       <label for="${name}" .hidden="${hidden}">
-                        <span class="label">${name}</span>
+                        <div class="header">
+                          <span class="label">${name} </span>
+                          <mwc-icon
+                            @click="${() => {
+                              const preview: HTMLDivElement | null = this.renderRoot?.querySelector(
+                                `div#${name}.preview`
+                              )
+                              const editor: HTMLTextAreaElement | null = this.renderRoot?.querySelector(
+                                `textarea#${name}`
+                              )
+                              if (preview && editor) {
+                                if (preview.hasAttribute('hidden')) {
+                                  preview.hidden = false
+                                  editor.hidden = true
+                                } else {
+                                  preview.hidden = true
+                                  editor.hidden = false
+                                }
+                              }
+                            }}"
+                            >preview</mwc-icon
+                          >
+                        </div>
+
                         <textarea
                           id="${name}"
                           name="${name}"
                           value="${data[name] || defaultValue}"
                           ?required="${required}"
                           ?readonly="${!editable}"
-                          @input="${(e: Event) => {
+                          @change="${(e: Event) => {
                             if (e.currentTarget) {
                               const textarea: HTMLTextAreaElement = e.currentTarget as HTMLTextAreaElement
-                              if (this.preview) {
-                                this.preview.innerHTML = md.render(textarea.value) || ''
+                              const id: string = textarea.id
+                              const preview: HTMLDivElement | null = this.renderRoot?.querySelector(`div#${id}.preview`)
+                              if (preview) {
+                                preview.innerHTML = md.render(textarea.value) || ''
                               }
                             }
                           }}"
                         ></textarea>
-                      </label>
 
-                      <label>
-                        <span class="label">Preview</span>
-                        <div class="preview"></div>
+                        <div hidden id="${name}" class="preview"></div>
                       </label>
                     `
                     break
@@ -319,10 +358,6 @@ export class FormPopup extends LitElement {
 
   get form(): HTMLFormElement | null {
     return this.renderRoot?.querySelector('form')
-  }
-
-  get preview(): HTMLDivElement | null {
-    return this.renderRoot?.querySelector('div.preview')
   }
 
   async updated(changedProps: PropertyValues): Promise<void> {
@@ -365,6 +400,20 @@ export class FormPopup extends LitElement {
     this.isOpened = false
     this.data = {}
     this.form?.reset()
+    this.clearPreviews()
+  }
+
+  private clearPreviews(): void {
+    const previewElements: HTMLDivElement[] = Array.from(this.renderRoot?.querySelectorAll('.preview'))
+    previewElements.forEach((preview: HTMLDivElement) => {
+      preview.innerHTML = ''
+      preview.hidden = true
+      const id: string = preview.id
+      const textarea: HTMLTextAreaElement | null = this.renderRoot?.querySelector(`textarea#${id}`)
+      if (textarea) {
+        textarea.hidden = false
+      }
+    })
   }
 
   toggle(): void {

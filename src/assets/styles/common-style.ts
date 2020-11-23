@@ -78,7 +78,7 @@ export const commonStyle: CSSResult = css`
     margin: var(--theme-wide-spacing, 10px) 0;
     font-weight: bold;
   }
-  label > span {
+  label span.label {
     font-size: small;
   }
   input,
@@ -97,5 +97,6 @@ export const commonStyle: CSSResult = css`
     color: var(--theme-darker-color);
     outline: none;
     resize: none;
+    padding: 2px;
   }
 `
