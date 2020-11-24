@@ -26,6 +26,7 @@ export interface BasicFieldOption {
   editable?: boolean
   defaultValue?: any
   hidden?: boolean
+  autoValidate?: boolean
 }
 
 export interface NumberFieldOption extends BasicFieldOption {
@@ -34,14 +35,11 @@ export interface NumberFieldOption extends BasicFieldOption {
   max: string
 }
 
-export interface SelectorOption {
-  name: string
-  value: any
-}
-
 export interface SelectorFieldOption extends BasicFieldOption {
   appendEmptyOption?: boolean
-  options: SelectorOption[]
+  options: Record<string, any>[]
+  nameField: string
+  valueField: string
 }
 
 export type FieldOption = BasicFieldOption | NumberFieldOption | SelectorFieldOption
@@ -113,6 +111,9 @@ export class FormPopup extends LitElement {
         .form {
           margin: var(--theme-wide-spacing, 10px);
         }
+        .form [invalid] {
+          border-bottom: 1px solid var(--theme-negative-color, tomato);
+        }
         .header {
           display: flex;
         }
@@ -151,7 +152,14 @@ export class FormPopup extends LitElement {
             <fieldset>
               ${fields.map((field: FormField) => {
                 const { name, option }: FormField = field
-                const { type, defaultValue = '', required = false, editable = true, hidden = false } = option || {}
+                const {
+                  type,
+                  defaultValue = '',
+                  required = false,
+                  editable = true,
+                  hidden = false,
+                  autoValidate = true,
+                } = option || {}
 
                 let template: TemplateResult
 
@@ -167,6 +175,7 @@ export class FormPopup extends LitElement {
                           ?checked="${Boolean(data[name] || defaultValue)}"
                           ?required="${required}"
                           ?disabled="${!editable}"
+                          @input="${autoValidate ? this.commonValidityHandler.bind(this) : undefined}"
                         />
                       </label>
                     `
@@ -180,9 +189,10 @@ export class FormPopup extends LitElement {
                           id="${name}"
                           name="${name}"
                           type="date"
-                          value="${data[name] || defaultValue}"
+                          .value="${data[name] || defaultValue}"
                           ?required="${required}"
                           ?readonly="${!editable}"
+                          @input="${autoValidate ? this.commonValidityHandler.bind(this) : undefined}"
                         />
                       </label>
                     `
@@ -195,9 +205,10 @@ export class FormPopup extends LitElement {
                         id="${name}"
                         name="${name}"
                         type="datetime"
-                        value="${data[name] || defaultValue}"
+                        .value="${data[name] || defaultValue}"
                         ?required="${required}"
                         ?readonly="${!editable}"
+                        @input="${autoValidate ? this.commonValidityHandler.bind(this) : undefined}"
                       />
                     </label>`
                     break
@@ -210,29 +221,36 @@ export class FormPopup extends LitElement {
                         id="${name}"
                         name="${name}"
                         type="number"
-                        value="${data[name] || defaultValue}"
+                        .value="${data[name] || defaultValue}"
                         ?required="${required}"
                         ?readonly="${!editable}"
                         .step="${step}"
                         .min="${min}"
                         .max="${max}"
+                        @input="${autoValidate ? this.commonValidityHandler.bind(this) : undefined}"
                       />
                     </label>`
                     break
 
                   case FieldTypes.Selector:
-                    const { options, appendEmptyOption = true } = option as SelectorFieldOption
+                    const { nameField, valueField, options, appendEmptyOption = true } = option as SelectorFieldOption
                     template = html`
                       <label for="${name}" .hidden="${hidden}">
                         <span class="label">${name}</span>
-                        <select id="${name}" name="${name}">
+                        <select
+                          id="${name}"
+                          name="${name}"
+                          @input="${autoValidate ? this.commonValidityHandler.bind(this) : undefined}"
+                        >
                           ${appendEmptyOption ? html`<option></option>` : ''}
-                          ${options.map(
-                            (option: SelectorOption) =>
-                              html`<option .selected="${option.value === data[name]}" value="${option.value}">
-                                ${option.name}
-                              </option>`
-                          )}
+                          ${options.map((option: Record<string, any>) => {
+                            return html`<option
+                              ?selected="${option[valueField] === data[valueField]}"
+                              .value="${option[valueField]}"
+                            >
+                              ${option.name}
+                            </option>`
+                          })}
                         </select>
                       </label>
                     `
@@ -245,9 +263,10 @@ export class FormPopup extends LitElement {
                         id="${name}"
                         name="${name}"
                         type="time"
-                        value="${data[name] || defaultValue}"
+                        .value="${data[name] || defaultValue}"
                         ?required="${required}"
                         ?readonly="${!editable}"
+                        @input="${autoValidate ? this.commonValidityHandler.bind(this) : undefined}"
                       />
                     </label>`
                     break
@@ -259,9 +278,10 @@ export class FormPopup extends LitElement {
                         id="${name}"
                         name="${name}"
                         type="text"
-                        value="${data[name] || defaultValue}"
+                        .value="${data[name] || defaultValue}"
                         ?required="${required}"
                         ?readonly="${!editable}"
+                        @input="${autoValidate ? this.commonValidityHandler.bind(this) : undefined}"
                       />
                     </label>`
                     break
@@ -273,9 +293,10 @@ export class FormPopup extends LitElement {
                         <textarea
                           id="${name}"
                           name="${name}"
-                          value="${data[name] || defaultValue}"
+                          .value="${data[name] || defaultValue}"
                           ?required="${required}"
                           ?readonly="${!editable}"
+                          @input="${autoValidate ? this.commonValidityHandler.bind(this) : undefined}"
                         ></textarea>
                       </label>
                     `
@@ -311,9 +332,10 @@ export class FormPopup extends LitElement {
                         <textarea
                           id="${name}"
                           name="${name}"
-                          value="${data[name] || defaultValue}"
+                          .value="${data[name] || defaultValue}"
                           ?required="${required}"
                           ?readonly="${!editable}"
+                          @input="${autoValidate ? this.commonValidityHandler.bind(this) : undefined}"
                           @change="${(e: Event) => {
                             if (e.currentTarget) {
                               const textarea: HTMLTextAreaElement = e.currentTarget as HTMLTextAreaElement
@@ -341,6 +363,7 @@ export class FormPopup extends LitElement {
                         value="${data[name] || defaultValue}"
                         ?required="${required}"
                         ?readonly="${!editable}"
+                        @input="${autoValidate ? this.commonValidityHandler.bind(this) : undefined}"
                       />
                     </label>`
                 }
@@ -418,5 +441,19 @@ export class FormPopup extends LitElement {
 
   toggle(): void {
     this.isOpened = !this.isOpened
+  }
+
+  commonValidityHandler(e: Event): void {
+    const input: HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement = e.currentTarget as
+      | HTMLInputElement
+      | HTMLSelectElement
+      | HTMLTextAreaElement
+    if (input) {
+      if (input.checkValidity()) {
+        input.removeAttribute('invalid')
+      } else {
+        input.setAttribute('invalid', '')
+      }
+    }
   }
 }

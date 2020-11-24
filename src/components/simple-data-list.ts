@@ -6,6 +6,7 @@ import { commonStyle } from '../assets/styles/common-style'
 export interface ListField {
   name: string
   icon?: string
+  displayModifier?: (data: any) => any
 }
 
 export interface ListFieldSet {
@@ -116,7 +117,7 @@ export class SimpleDataList extends LitElement {
     const selectable: boolean = this.selectable || false
     const data: Record<string, any>[] = this.data || []
 
-    const { name, icon }: ListField = fieldSet.keyField
+    const { name, icon, displayModifier: keyFieldDisplayModifier }: ListField = fieldSet.keyField
     const detailFields: ListField[] = fieldSet.detailFields || []
 
     return html`
@@ -150,7 +151,7 @@ export class SimpleDataList extends LitElement {
           >
             <div class="card">
               ${icon ? html`<span class="icon"><mwc-icon>${icon}</mwc-icon></span>` : ''}
-              <span class="key-field">${item[name]}</span>
+              <span class="key-field">${(keyFieldDisplayModifier && keyFieldDisplayModifier(item)) || item[name]}</span>
 
               ${detailFields?.length
                 ? html`
@@ -172,9 +173,9 @@ export class SimpleDataList extends LitElement {
             <div class="detail-card" ?opened="${opened}">
               <div class="detail-content">
                 ${detailFields.map(
-                  ({ name, icon }: ListField) => html`
+                  ({ name, icon, displayModifier }: ListField) => html`
                     ${icon ? html`<span class="icon"><mwc-icon>${icon}</mwc-icon></span>` : ''}
-                    <span class="detail-field">${item[name]}</span>
+                    <span class="detail-field">${(displayModifier && displayModifier(item)) || item[name]}</span>
                   `
                 )}
               </div>

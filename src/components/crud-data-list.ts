@@ -13,7 +13,7 @@ export interface Field {
   hidden?: boolean
   icon?: string
   type?: FieldTypes
-  options?: FieldOption
+  options?: FieldOption & { listDisplayModifier?: (data: any) => any }
 }
 
 @customElement('crud-data-list')
@@ -27,12 +27,25 @@ export class CRUDDataList extends LitElement {
         type: ButtonTypes.Positive,
         action: () => {
           if (this.popup?.form) {
-            this.dispatchEvent(
-              new CustomEvent('saveButtonClick', {
-                detail: { data: FormUtil.serialize(this.popup.form) },
+            if (this.popup.form.checkValidity()) {
+              this.dispatchEvent(
+                new CustomEvent('saveButtonClick', {
+                  detail: { data: FormUtil.serialize(this.popup.form) },
+                })
+              )
+              this.popup.close()
+            } else {
+              const inputs: (HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement)[] = Array.from(
+                this.popup.form.querySelectorAll('input,select,textarea')
+              )
+              inputs.forEach((input) => {
+                if (input.checkValidity() && input.hasAttribute('invalid')) {
+                  input.removeAttribute('invalid')
+                } else if (!input.checkValidity()) {
+                  input.setAttribute('invalid', '')
+                }
               })
-            )
-            this.popup.close()
+            }
           }
         },
       },
@@ -85,11 +98,16 @@ export class CRUDDataList extends LitElement {
       fields = fields.filter((field: Field) => !field.hidden)
 
       return {
-        keyField: { name: fields[0].name, icon: fields[0].icon || '' },
+        keyField: {
+          name: fields[0].name,
+          icon: fields[0].icon || '',
+          displayModifier: fields[0].options?.listDisplayModifier,
+        },
         detailFields: fields.slice(1).map((field: Field) => {
           return {
             name: field.name,
             icon: field.icon || '',
+            displayModifier: field.options?.listDisplayModifier,
           }
         }),
       }

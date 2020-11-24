@@ -29,22 +29,25 @@ export class PageCards extends Page {
 
   async pageActivated(): Promise<void> {
     const categories: Category[] = await new CategoryEntity().find()
+
     this.fields = [
       {
         name: 'name',
         options: {
           required: true,
+          listDisplayModifier: (card: Card) => `${card.name} - ${(card.category as Category).name}`,
         },
       },
       {
         name: 'category',
         options: {
           type: FieldTypes.Selector,
-          options: categories.map((c: Category) => {
-            const { id, name }: Category = c
-            return { name: name as string, value: id }
-          }),
+          options: categories,
+          nameField: 'name',
+          valueField: 'id',
           required: true,
+          listDisplayModifier: (card: Card) => `${(card.category as Category).name}`,
+          appendEmptyOption: false,
         },
       },
       {
@@ -59,16 +62,7 @@ export class PageCards extends Page {
   }
 
   async fetchCards(): Promise<void> {
-    const cards: Card[] = await new CardEntity().find()
-
-    this.data = cards.map((card: Card) => {
-      return {
-        id: card.id,
-        name: `${card.name} - ${(card.category as Category).name}`,
-        category: (card.category as Category).name,
-        description: card.description,
-      }
-    })
+    this.data = await new CardEntity().find()
   }
 
   async saveCard(e: CustomEvent): Promise<void> {
