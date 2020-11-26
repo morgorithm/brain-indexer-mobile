@@ -1,16 +1,14 @@
 {
-  "name": "io.cordova.hellocordova",
-  "displayName": "HelloCordova",
+  "name": "brain-indexer",
+  "displayName": "Brain Indexer",
   "version": "1.0.0",
-  "description": "A sample Apache Cordova application that responds to the deviceready event.",
+  "description": "Help you to memorize anything - Brain Indexer",
   "main": "index.js",
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
-  },
+  "scripts": {},
   "keywords": [
     "ecosystem:cordova"
   ],
-  "author": "Apache Cordova Team",
+  "author": "Jay Lee <jaylee.possible@gmail.com>",
   "license": "Apache-2.0",
   "devDependencies": {
     "cordova-android": "^9.0.0",

@@ -2,6 +2,8 @@ import '@material/mwc-icon'
 
 import { CSSResult, LitElement, TemplateResult, css, customElement, html, property } from 'lit-element'
 
+import { commonStyle } from '../assets/styles/common-style'
+
 export interface Menu {
   icon: string
   title: string
@@ -15,6 +17,7 @@ export class SideMenus extends LitElement {
 
   static get styles(): CSSResult[] {
     return [
+      commonStyle,
       css`
         :host {
           position: absolute;

@@ -11,7 +11,7 @@ import { Page } from './page'
 export class PageCategories extends Page {
   @property({ type: Array }) fields: Field[] = [
     { name: 'id', hidden: true },
-    { name: 'name' },
+    { name: 'name', options: { required: true } },
     { name: 'itemCnt', hidden: true },
   ]
   @property({ type: Array }) data: Record<string, any>[] = []
@@ -45,6 +45,7 @@ export class PageCategories extends Page {
     try {
       const category: Category = new Category(e.detail.data)
       await new CategoryEntity().save(category)
+
       this.fetchCategories()
     } catch (e) {
       throw e

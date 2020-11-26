@@ -32,6 +32,10 @@ export class PageCards extends Page {
 
     this.fields = [
       {
+        name: 'id',
+        hidden: true,
+      },
+      {
         name: 'name',
         options: {
           required: true,
@@ -69,6 +73,7 @@ export class PageCards extends Page {
     try {
       const card: Card = new Card(e.detail.data)
       await new CardEntity().save(card)
+
       this.fetchCards()
     } catch (e) {
       throw e

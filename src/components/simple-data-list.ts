@@ -51,13 +51,14 @@ export class SimpleDataList extends LitElement {
           font-weight: bolder;
         }
         .list-header > mwc-icon {
-          font-size: medium;
           margin: auto 0px auto var(--theme-common-spacing, 5px);
         }
         li {
           color: white;
           padding: var(--theme-common-spacing, 5px);
+          border: 1px solid var(--theme-dark-color);
           border-radius: var(--theme-common-radius, 5px);
+          margin: var(--theme-common-spacing, 5px);
         }
         li[selected] {
           background: var(--theme-neutral-color);
@@ -95,7 +96,6 @@ export class SimpleDataList extends LitElement {
           margin: var(--theme-common-spacing, 5px) 0px;
         }
         .inner-button {
-          font-size: medium;
           margin: auto 0px auto var(--theme-common-spacing, 5px);
         }
         .inner-button:nth-child(1) {

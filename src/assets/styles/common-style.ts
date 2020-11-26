@@ -45,7 +45,6 @@ export const commonStyle: CSSResult = css`
   button > mwc-icon,
   button:active > mwc-icon {
     margin: auto;
-    font-size: medium;
   }
   button:active > mwc-icon {
     color: gray;

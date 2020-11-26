@@ -16,6 +16,7 @@ export class PageHome extends Page {
     action: () => new Router().navigate('Chanllenge', 'challenge'),
   }
 
+  @property({ type: Boolean }) isHomePage: boolean = true
   @property({ type: Object }) fieldSet: ListFieldSet = {
     keyField: {
       name: 'nameAndCount',

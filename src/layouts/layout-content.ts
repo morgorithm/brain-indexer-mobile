@@ -39,8 +39,13 @@ export class LayoutContent extends LitElement {
 
   firstUpdated(): void {
     const currentRoute: string = location.pathname.replace(/^\//, '')
-    const page: Page =
-      this.pages.find((page: Page) => page.route === currentRoute) || this.homePage || this.page404 || this.pages[0]
+    let page: Page
+    if (!currentRoute || currentRoute.indexOf('index.html') >= 0) {
+      page = this.homePage || this.pages[0]
+    } else {
+      page = this.pages.find((page: Page) => page.route === currentRoute) || this.page404 || this.pages[0]
+    }
+
     const { title, route } = page
     new Router().navigate(title, route, Router.getURLSearchParams())
   }
@@ -70,7 +75,9 @@ export class LayoutContent extends LitElement {
     if (page) {
       page.showPage()
     } else {
-      if (this.page404) {
+      if (!route && this.homePage) {
+        this.homePage.showPage()
+      } else if (this.page404) {
         this.page404.showPage()
       } else {
         console.warn('Page not found')

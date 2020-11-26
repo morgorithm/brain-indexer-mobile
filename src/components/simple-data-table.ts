@@ -45,9 +45,6 @@ export class SimpleDataTable extends LitElement {
         .index {
           width: 10px;
         }
-        mwc-icon {
-          font-size: medium;
-        }
       `,
     ]
   }

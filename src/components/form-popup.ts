@@ -112,7 +112,7 @@ export class FormPopup extends LitElement {
           margin: var(--theme-wide-spacing, 10px);
         }
         .form [invalid] {
-          border-bottom: 1px solid var(--theme-negative-color, tomato);
+          border-color: var(--theme-negative-color, tomato);
         }
         .header {
           display: flex;
