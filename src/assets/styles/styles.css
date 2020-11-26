@@ -6,6 +6,7 @@ body {
   height: 100%;
   width: 100%;
   margin: 0;
+  overflow: hidden;
 
   /* theme */
   /* color */
@@ -13,10 +14,12 @@ body {
   --theme-light-color: #8CD790;
   --theme-dark-color:#77AF9C;
   --theme-darker-color: #285943;
+  
 
   --theme-positive-color: #4378db;
   --theme-negative-color: #fe5d7c;
   --theme-neutral-color: #8ad1CA;
+  --theme-warn-color: #e1cc52;
 
   /* spacing */
   --theme-common-spacing: 5px;
@@ -27,4 +30,6 @@ body {
 
   /* shadow */
   --theme-common-shadow: 1px 1px rgba(0, 0, 0, 0.5);
+
+  --mdc-icon-size: 3vh;
 }

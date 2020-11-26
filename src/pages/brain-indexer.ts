@@ -1,5 +1,6 @@
 import '../assets/styles/styles.css'
 import '../components/side-menus'
+import '../components/toast-message'
 import '../layouts'
 
 import { CSSResult, LitElement, TemplateResult, css, customElement, html, property } from 'lit-element'
@@ -34,6 +35,7 @@ export class BrainIndexer extends LitElement {
   render(): TemplateResult {
     return html`
       <side-menus @menuClick="${this.route}" .menus="${Menus}"></side-menus>
+      <toast-message></toast-message>
 
       <layout-header @menuIconClick="${this.onMenuIconClick}"></layout-header>
 

@@ -3,6 +3,7 @@ import '../components/form-popup'
 
 import { Category, CategoryEntity } from '../schemas/category'
 import { TemplateResult, customElement, html, property } from 'lit-element'
+import { ToastMessageTypes, showToast } from '../components/toast-message'
 
 import { Field } from '../components/crud-data-list'
 import { Page } from './page'
@@ -60,7 +61,11 @@ export class PageCategories extends Page {
         this.fetchCategories()
       }
     } catch (e) {
-      throw e
+      showToast({
+        subtitle: 'Failed to delete category',
+        message: e.message,
+        type: ToastMessageTypes.Warn,
+      })
     }
   }
 }

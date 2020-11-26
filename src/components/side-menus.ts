@@ -85,6 +85,9 @@ export class SideMenus extends LitElement {
         .mailto > a > mwc-icon {
           color: var(--theme-darker-color);
         }
+        a {
+          text-decoration: none;
+        }
       `,
     ]
   }
