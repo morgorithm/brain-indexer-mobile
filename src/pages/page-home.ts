@@ -6,6 +6,7 @@ import { ListFieldSet, SimpleDataList } from '../components/simple-data-list'
 
 import { Page } from './page'
 import { Router } from '../utils'
+import { pageCommonStyle } from '../assets/styles/page-common-style'
 
 @customElement('page-home')
 export class PageHome extends Page {
@@ -28,18 +29,7 @@ export class PageHome extends Page {
   @property({ type: Object }) footerContent?: FooterButtonContent
 
   static get styles(): CSSResult[] {
-    return [
-      css`
-        :host {
-          flex: 1;
-          display: flex;
-          overflow: auto;
-        }
-        simple-data-list {
-          flex: 1;
-        }
-      `,
-    ]
+    return [pageCommonStyle]
   }
 
   render(): TemplateResult {
@@ -47,6 +37,7 @@ export class PageHome extends Page {
     const data: Record<string, any>[] = this.data || []
 
     return html`<simple-data-list
+      .fillterable="${false}"
       .title="${this.title}"
       .fieldSet="${fieldSet}"
       .data="${data}"

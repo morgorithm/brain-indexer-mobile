@@ -13,6 +13,7 @@ export interface PageInfo {
 }
 
 export class Page extends LitElement implements PageInfo {
+  @property({ type: Boolean, reflect: true }) show: boolean = false
   @property({ type: String }) title: string = ''
   @property({ type: String }) route: string
   @property({ type: Object }) params?: Record<string, any>
@@ -23,26 +24,12 @@ export class Page extends LitElement implements PageInfo {
   pageActivated(): void {}
   pageUpdated(changedProps: PropertyValues): void {}
 
-  static get styles(): CSSResult[] {
-    return [
-      commonStyle,
-      css`
-        :host {
-          display: flex;
-          flex-direction: column;
-          flex: 1;
-        }
-      `,
-    ]
-  }
-
   constructor(title: string, route: string, isFallbackPage: boolean = false) {
     super()
     this.title = title
     this.route = route
     this.params = Router.getURLSearchParams()
     this.isFallbackPage = isFallbackPage
-    this.style.display = 'none'
 
     document.addEventListener('after-navigate', (event: Event) => {
       const {
@@ -74,12 +61,12 @@ export class Page extends LitElement implements PageInfo {
   }
 
   showPage(): void {
-    this.style.display = 'flex'
+    this.show = true
     this.activated()
   }
 
   hidePage(): void {
-    this.style.display = 'none'
+    this.show = false
   }
 
   dispatchHeaderRendering(): void {

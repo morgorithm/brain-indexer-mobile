@@ -18,11 +18,13 @@ export interface ListFieldSet {
 export class SimpleDataList extends LitElement {
   @property({ type: Object }) fieldSet: ListFieldSet = { keyField: { name: '' } }
   @property({ type: String }) title: string = 'My List'
+  @property({ type: Boolean }) fillterable: boolean = true
   @property({ type: Boolean }) selectable: boolean = false
   @property({ type: Boolean }) addable: boolean = false
   @property({ type: Boolean }) editable: boolean = false
   @property({ type: Array }) data: Record<string, any>[] = []
   @property({ type: Boolean }) private checkAll: boolean = false
+  @property({ type: String }) private filterKeyword: string = ''
 
   @property({ type: Number }) openedIdx?: number
 
@@ -30,19 +32,20 @@ export class SimpleDataList extends LitElement {
     return [
       commonStyle,
       css`
-        ul {
-          list-style-type: none;
-          padding-inline-start: var(--theme-wide-spacing, 10px);
-          border-radius: var(--theme-common-radius, 5px);
-          padding: var(--theme-common-spacing, 5px);
-          background-color: var(--theme-darker-color);
-          margin: 0;
+        :host {
+          display: flex;
+          flex-direction: column;
+          overflow: hidden;
         }
         .list-header {
           display: flex;
-          margin: var(--theme-common-spacing, 5px);
           border-bottom: 1px solid var(--theme-dark-color);
-          padding-bottom: var(--theme-common-spacing, 5px);
+          padding: var(--theme-wide-spacing, 10px);
+          background-color: var(--theme-darker-color);
+          border-radius: var(--theme-common-radius, 5px) var(--theme-common-radius, 5px) 0px 0px;
+        }
+        .list-header > mwc-icon {
+          margin: auto 0px auto var(--theme-common-spacing, 5px);
         }
         .title {
           flex: 1;
@@ -50,8 +53,27 @@ export class SimpleDataList extends LitElement {
           color: white;
           font-weight: bolder;
         }
-        .list-header > mwc-icon {
-          margin: auto 0px auto var(--theme-common-spacing, 5px);
+        .filter-container {
+          padding: var(--theme-wide-spacing, 10px);
+          background-color: var(--theme-darker-color);
+          display: flex;
+        }
+        .filter-container > input {
+          color: white;
+          flex: 1;
+          border-bottom: 1px solid var(--theme-dark-color);
+        }
+        ul {
+          list-style-type: none;
+          padding-inline-start: var(--theme-wide-spacing, 10px);
+          border-radius: 0px 0px var(--theme-common-radius, 5px) var(--theme-common-radius, 5px);
+          padding: var(--theme-common-spacing, 5px);
+          background-color: var(--theme-darker-color);
+          margin: 0;
+          flex: 1;
+          overflow: auto;
+          display: flex;
+          flex-direction: column;
         }
         li {
           color: white;
@@ -71,7 +93,7 @@ export class SimpleDataList extends LitElement {
           font-weight: bold;
           text-overflow: ellipsis;
           overflow: hidden;
-          margin: auto var(--theme-common-spacing, 5px);
+          margin: var(--theme-common-spacing, 5px);
         }
         .detail-card {
           display: flex;
@@ -107,29 +129,54 @@ export class SimpleDataList extends LitElement {
         .inner-button.negative {
           color: var(--theme-negative-color);
         }
+        mwc-icon {
+          font-size: medium;
+        }
       `,
     ]
   }
 
   render(): TemplateResult {
     const fieldSet: ListFieldSet = this.fieldSet || { keyField: { name: '' } }
+    const fillterable: boolean = this.fillterable
     const addable: boolean = this.addable || false
     const selectable: boolean = this.selectable || false
-    const data: Record<string, any>[] = this.data || []
+    let data: Record<string, any>[] = this.data || []
+
+    if (fillterable && this.filterKeyword.length > 0) {
+      const { keyField }: ListFieldSet = fieldSet
+      data = data.filter(
+        (data: Record<string, any>) => data[keyField.name].toLowerCase().indexOf(this.filterKeyword.toLowerCase()) >= 0
+      )
+    }
 
     const { name, icon, displayModifier: keyFieldDisplayModifier }: ListField = fieldSet.keyField
     const detailFields: ListField[] = fieldSet.detailFields || []
 
     return html`
-      <ul>
-        <div class="list-header">
-          <span class="title">${this.title}</span>
-          ${addable ? html` <mwc-icon @click="${this.onAddButtonClick}">add_circle_outline</mwc-icon> ` : ''}
-          ${selectable
-            ? html`<mwc-icon @click="${this.selectAll}">${this.checkAll ? 'cancel' : 'check_circle'}</mwc-icon>`
-            : ''}
-        </div>
+      <div class="list-header">
+        <span class="title">${this.title}</span>
+        ${addable ? html` <mwc-icon @click="${this.onAddButtonClick}">add_circle_outline</mwc-icon> ` : ''}
+        ${selectable
+          ? html`<mwc-icon @click="${this.selectAll}">${this.checkAll ? 'cancel' : 'check_circle'}</mwc-icon>`
+          : ''}
+      </div>
 
+      ${fillterable
+        ? html`
+            <div class="filter-container">
+              <mwc-icon>filter_alt</mwc-icon>
+              <input
+                type="search"
+                @input="${(e: KeyboardEvent) => {
+                  this.filterKeyword = (e.currentTarget as HTMLInputElement).value
+                }}"
+              />
+            </div>
+          `
+        : ''}
+
+      <ul>
         ${data.map((item: Record<string, any>, itemIdx: number) => {
           const opened: boolean = this.openedIdx === itemIdx
 

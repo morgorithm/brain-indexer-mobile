@@ -31,7 +31,7 @@ export class CategoryEntity extends TransactionHelper<Category> {
   protected async beforeDelete(key: number) {
     const category: Category = await this.findOne(key)
     if (category.itemCnt) {
-      throw new Error(`it's being referenced by ${category.itemCnt} number(s) of card(s)`)
+      throw new Error(`it's being referenced by ${category.itemCnt} number of cards`)
     }
   }
 }

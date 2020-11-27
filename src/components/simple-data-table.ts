@@ -4,9 +4,16 @@ import { CSSResult, LitElement, TemplateResult, css, customElement, html, proper
 
 import { commonStyle } from '../assets/styles/common-style'
 
+export interface TableCaption {
+  icon?: string
+  caption: string
+}
+
 @customElement('simple-data-table')
 export class SimpleDataTable extends LitElement {
+  @property({ type: Object }) caption?: TableCaption
   @property({ type: Array }) fields: string[] = []
+  @property({ type: Boolean }) numbering: boolean = true
   @property({ type: Array }) data: Record<string, any>[] = []
   @property({ type: Boolean }) selectable: boolean = false
   @property({ type: Boolean }) editable: boolean = false
@@ -29,6 +36,9 @@ export class SimpleDataTable extends LitElement {
           border-spacing: unset;
           color: white;
         }
+        caption {
+          font-weight: bold;
+        }
         thead {
           text-transform: capitalize;
         }
@@ -50,11 +60,20 @@ export class SimpleDataTable extends LitElement {
   }
 
   render(): TemplateResult {
+    const { icon, caption } = this.caption || {}
     const fields: string[] = this.fields || []
     const data: Record<string, any>[] = this.data || []
 
     return html`
       <table>
+        ${caption
+          ? html`
+              <caption>
+                ${icon ? html`<mwc-icon>${icon}</mwc-icon>` : ''}
+                <span>${caption} </span>
+              </caption>
+            `
+          : ''}
         <thead>
           <tr>
             ${this.selectable
@@ -64,7 +83,7 @@ export class SimpleDataTable extends LitElement {
                   >
                 </th>`
               : ''}
-            <th class="index">No.</th>
+            ${this.numbering ? html`<th class="index">No.</th>` : ''}
             ${fields.map((field: string) => html`<th>${field}</th>`)}
             ${this.editable
               ? html`<th></th>
@@ -77,7 +96,7 @@ export class SimpleDataTable extends LitElement {
             (item: Record<string, any>, rowIdx: number) =>
               html` <tr>
                 ${this.selectable ? html`<td><input .checked="${this.checkAll}" type="checkbox" /></td>` : ''}
-                <td class="index">${rowIdx + 1}</td>
+                ${this.numbering ? html`<td class="index">${rowIdx + 1}</td>` : ''}
                 ${fields.map((field: string) => html`<td>${item[field]}</td>`)}
                 ${this.editable
                   ? html`<td class="editable-icon">

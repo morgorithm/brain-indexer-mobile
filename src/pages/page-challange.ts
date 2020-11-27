@@ -5,6 +5,7 @@ import { FooterButtonContent, FooterTypes } from '../layouts/layout-footer'
 import { ButtonTypes } from '../components/button-bar'
 import { Page } from './page'
 import { commonStyle } from '../assets/styles/common-style'
+import { pageCommonStyle } from '../assets/styles/page-common-style'
 
 @customElement('page-challenge')
 export class PageChallenge extends Page {
@@ -19,12 +20,8 @@ export class PageChallenge extends Page {
   static get styles(): CSSResult[] {
     return [
       commonStyle,
+      pageCommonStyle,
       css`
-        :host {
-          display: flex;
-          flex-direction: column;
-          flex: 1;
-        }
         .container {
           flex: 1;
           display: grid;

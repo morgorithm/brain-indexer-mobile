@@ -27,7 +27,7 @@ export interface Schema {
 export abstract class TransactionHelper<T> extends CRUDHooks<T> {
   protected abstract schema: Schema
   protected databaseName: string = DATABASE.name
-  protected version: number = (DATABASE.version = 1)
+  protected version: number = DATABASE.version
   private db?: IDBDatabase
 
   async openDB(): Promise<void> {

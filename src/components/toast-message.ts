@@ -84,9 +84,6 @@ export class ToastMessage extends LitElement {
           text-transform: capitalize;
           font-weight: bold;
         }
-        .message {
-          text-transform: capitalize;
-        }
       `,
     ]
   }
@@ -129,7 +126,7 @@ export class ToastMessage extends LitElement {
           if (this.messageStack.length) {
             this.toastUp()
           }
-        }, (this.message?.interval && this.message.interval * 1000 + 500) || 500 + 500)
+        }, (this.message?.interval && this.message.interval * 1000 + 500) || 1000 + 500)
       }
     }
   }

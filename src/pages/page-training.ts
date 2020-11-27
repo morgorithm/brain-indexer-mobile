@@ -5,7 +5,9 @@ import { FooterButtonContent, FooterTypes } from '../layouts/layout-footer'
 
 import MarkdownIt from 'markdown-it'
 import { Page } from './page'
+import { StatisticEntity } from '../schemas/statistic'
 import { commonStyle } from '../assets/styles/common-style'
+import { pageCommonStyle } from '../assets/styles/page-common-style'
 
 const md: MarkdownIt = new MarkdownIt()
 
@@ -42,12 +44,8 @@ export class PageTraining extends Page {
   static get styles(): CSSResult[] {
     return [
       commonStyle,
+      pageCommonStyle,
       css`
-        :host {
-          display: flex;
-          flex-direction: column;
-          flex: 1;
-        }
         .container {
           flex: 1;
           display: grid;
@@ -134,12 +132,13 @@ export class PageTraining extends Page {
 
   private async fetchCard() {
     this.openDescriptionCard = false
-    await this.updateComplete
-    const categoryId: number = this.pickRandomly(this.categoryIds)
-    const cards: Card[] = await new CardEntity().getCardsByCategoryId(categoryId)
-    this.category = await new CategoryEntity().findOne(categoryId)
-    this.card = this.pickRandomly(cards)
-    this.renderMarkdown(this.card?.description)
+    setTimeout(async () => {
+      const categoryId: number = this.pickRandomly(this.categoryIds)
+      const cards: Card[] = await new CardEntity().getCardsByCategoryId(categoryId)
+      this.category = await new CategoryEntity().findOne(categoryId)
+      this.card = this.pickRandomly(cards)
+      this.renderMarkdown(this.card?.description)
+    }, 300)
   }
 
   private renderMarkdown(description: string = '') {
@@ -159,11 +158,27 @@ export class PageTraining extends Page {
     this.openDescriptionCard = true
   }
 
-  private knewIt() {
+  private async knewIt() {
+    try {
+      await new StatisticEntity().save({
+        card: this.card?.id as number,
+        category: this.category?.id as number,
+        passed: true,
+      })
+    } catch (e) {}
+
     this.fetchCard()
   }
 
-  private didNotKnowIt() {
+  private async didNotKnowIt() {
+    try {
+      await new StatisticEntity().save({
+        card: this.card?.id as number,
+        category: this.category?.id as number,
+        passed: false,
+      })
+    } catch (e) {}
+
     this.fetchCard()
   }
 }

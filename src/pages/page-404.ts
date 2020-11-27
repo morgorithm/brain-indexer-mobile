@@ -2,6 +2,7 @@ import { CSSResult, TemplateResult, css, customElement, html, property } from 'l
 
 import { Page } from './page'
 import { commonStyle } from '../assets/styles/common-style'
+import { pageCommonStyle } from '../assets/styles/page-common-style'
 
 @customElement('page-404')
 export class Page404 extends Page {
@@ -10,12 +11,8 @@ export class Page404 extends Page {
   static get styles(): CSSResult[] {
     return [
       commonStyle,
+      pageCommonStyle,
       css`
-        :host {
-          color: white;
-          font-size: x-large;
-          display: flex;
-        }
         #message-box {
           flex: 1;
         }

@@ -1,12 +1,13 @@
 import './form-popup'
 import './simple-data-list'
 
+import { CSSResult, LitElement, TemplateResult, css, customElement, html, property } from 'lit-element'
 import { FieldOption, FieldTypes, FormField, FormPopup, PopupOption } from './form-popup'
-import { LitElement, TemplateResult, customElement, html, property } from 'lit-element'
 
 import { ButtonTypes } from './button-bar'
 import { FormUtil } from '../utils'
 import { ListFieldSet } from './simple-data-list'
+import { commonStyle } from '../assets/styles/common-style'
 
 export interface Field {
   name: string
@@ -52,6 +53,20 @@ export class CRUDDataList extends LitElement {
     ],
   }
   @property({ type: Array }) data: Record<string, any>[] = []
+
+  static get styles(): CSSResult[] {
+    return [
+      commonStyle,
+      css`
+        :host {
+          flex: 1;
+          display: flex;
+          flex-direction: column;
+          overflow: hidden;
+        }
+      `,
+    ]
+  }
 
   render(): TemplateResult {
     const fields: Field[] = this.fields || []

@@ -1,5 +1,3 @@
-import { TemplateResult, html } from 'lit-element'
-
 import { Menu } from '../components/side-menus'
 
 export const Menus: Menu[] = [
@@ -19,7 +17,7 @@ export const Menus: Menu[] = [
     route: 'categories',
   },
   {
-    icon: 'insights',
+    icon: 'bar_chart',
     title: 'Statistics',
     route: 'statistics',
   },
@@ -30,7 +28,12 @@ export const Menus: Menu[] = [
   },
 ]
 
-export const DATABASE: Record<string, any> = {
+export interface DatabaseConfiguration {
+  name: string
+  version: number
+}
+
+export const DATABASE: DatabaseConfiguration = {
   name: 'brain-indexer-database',
-  version: 1,
+  version: 2,
 }

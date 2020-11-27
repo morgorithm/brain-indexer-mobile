@@ -1,14 +1,21 @@
+import { CSSResult, TemplateResult, css, customElement, html, property } from 'lit-element'
 import { Card, CardEntity, Category, CategoryEntity } from '../schemas'
-import { TemplateResult, customElement, html, property } from 'lit-element'
+import { ToastMessageTypes, showToast } from '../components/toast-message'
 
 import { Field } from '../components/crud-data-list'
 import { FieldTypes } from '../components/form-popup'
 import { Page } from './page'
+import { commonStyle } from '../assets/styles/common-style'
+import { pageCommonStyle } from '../assets/styles/page-common-style'
 
 @customElement('page-cards')
 export class PageCards extends Page {
   @property({ type: Array }) fields: Field[] = []
   @property({ type: Array }) data: Record<string, any>[] = []
+
+  static get styles(): CSSResult[] {
+    return [commonStyle, pageCommonStyle]
+  }
 
   render(): TemplateResult {
     const fields: Field[] = this.fields || []
@@ -75,20 +82,38 @@ export class PageCards extends Page {
       await new CardEntity().save(card)
 
       this.fetchCards()
+      showToast({
+        subtitle: 'card has been created',
+        message: `'${card.name}' is created successfully`,
+        type: ToastMessageTypes.Info,
+      })
     } catch (e) {
-      throw e
+      showToast({
+        subtitle: 'failed to save card',
+        message: e.message,
+        type: ToastMessageTypes.Warn,
+      })
     }
   }
 
   async deleteCard(e: CustomEvent): Promise<void> {
     try {
-      const { id }: Card = new Card(e.detail.data)
+      const { id, name }: Card = new Card(e.detail.data)
       if (id) {
         await new CardEntity().delete(id)
         this.fetchCards()
+        showToast({
+          subtitle: 'card has been deleted',
+          message: `'${name}' is deleted successfully`,
+          type: ToastMessageTypes.Info,
+        })
       }
     } catch (e) {
-      throw e
+      showToast({
+        subtitle: 'failed to delete card',
+        message: e.message,
+        type: ToastMessageTypes.Error,
+      })
     }
   }
 }
