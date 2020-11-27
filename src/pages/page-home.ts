@@ -26,7 +26,10 @@ export class PageHome extends Page {
   @property({ type: Array }) data: Record<string, any>[] = []
   @property({ type: Array }) selectedData: Record<string, any>[] = []
 
-  @property({ type: Object }) footerContent?: FooterButtonContent
+  @property({ type: Object }) footerContent?: FooterButtonContent = {
+    type: FooterTypes.Button,
+    buttons: [this.challengeButton],
+  }
 
   static get styles(): CSSResult[] {
     return [pageCommonStyle]
@@ -74,19 +77,17 @@ export class PageHome extends Page {
     const selectedCategories: Record<string, any>[] = this.dataList?.selectedData || []
     if (selectedCategories.length) {
       const categoryIds: number[] = selectedCategories.map((category: Record<string, any>) => category.id)
+      this.footerContent?.buttons.push({
+        type: ButtonTypes.Positive,
+        name: 'training',
+        icon: 'school',
+        action: () => new Router().navigate('Training', `training`, { categoryIds }),
+      })
+    } else {
       this.footerContent = {
         type: FooterTypes.Button,
-        buttons: [
-          {
-            type: ButtonTypes.Positive,
-            name: 'training',
-            icon: 'school',
-            action: () => new Router().navigate('Training', `training`, { categoryIds }),
-          },
-        ],
+        buttons: [this.challengeButton],
       }
-    } else {
-      this.footerContent = undefined
     }
 
     this.dispatchFooterRendering()

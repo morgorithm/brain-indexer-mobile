@@ -3,6 +3,7 @@ export class Router {
   public params?: Record<string, any>
 
   navigate(title: string, route: string, params?: Record<string, any>, data: any = ''): void {
+    debugger
     document.dispatchEvent(
       new CustomEvent('before-navigate', {
         detail: {

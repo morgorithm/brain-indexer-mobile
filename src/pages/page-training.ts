@@ -75,6 +75,7 @@ export class PageTraining extends Page {
           top: 100%;
           background-color: white;
           transition: top 0.3s ease-in-out;
+          padding: var(--theme-common-spacing, 5px);
         }
         .bottom-part[opened] {
           top: 0;
