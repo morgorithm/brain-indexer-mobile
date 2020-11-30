@@ -38,6 +38,14 @@ export class SimpleDataTable extends LitElement {
         }
         caption {
           font-weight: bold;
+          margin-bottom: var(--theme-common-spacing, 5px);
+        }
+        .caption-container {
+          display: flex;
+          margin: auto;
+        }
+        .caption-container > * {
+          margin: auto 0px;
         }
         thead {
           text-transform: capitalize;
@@ -69,8 +77,10 @@ export class SimpleDataTable extends LitElement {
         ${caption
           ? html`
               <caption>
-                ${icon ? html`<mwc-icon>${icon}</mwc-icon>` : ''}
-                <span>${caption} </span>
+                <div class="caption-container">
+                  ${icon ? html`<mwc-icon>${icon}</mwc-icon>` : ''}
+                  <span>${caption} </span>
+                </div>
               </caption>
             `
           : ''}

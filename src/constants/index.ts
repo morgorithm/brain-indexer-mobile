@@ -35,5 +35,5 @@ export interface DatabaseConfiguration {
 
 export const DATABASE: DatabaseConfiguration = {
   name: 'brain-indexer-database',
-  version: 3,
+  version: 4,
 }

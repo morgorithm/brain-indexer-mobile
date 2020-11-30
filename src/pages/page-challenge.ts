@@ -1,15 +1,14 @@
-import '../components/progress-bar'
-
-import { Button, ButtonTypes } from '../components/button-bar'
-import { CSSResult, PropertyValues, TemplateResult, css, customElement, html, property } from 'lit-element'
-import { Card, CardEntity, Category, DailyChallengeEntity } from '../schemas'
-import { FooterButtonContent, FooterTypes } from '../layouts/layout-footer'
-import { ToastMessageTypes, showToast } from '../components/toast-message'
-
+import { css, CSSResult, customElement, html, property, PropertyValues, TemplateResult } from 'lit-element'
 import MarkdownIt from 'markdown-it'
-import { Page } from './page'
 import { commonStyle } from '../assets/styles/common-style'
 import { pageCommonStyle } from '../assets/styles/page-common-style'
+import { Button, ButtonTypes } from '../components/button-bar'
+import '../components/progress-bar'
+import { showToast, ToastMessageTypes } from '../components/toast-message'
+import { FooterButtonContent, FooterTypes } from '../layouts/layout-footer'
+import { Card, CardEntity, Category, DailyChallengeEntity } from '../schemas'
+import { Router } from '../utils'
+import { Page } from './page'
 
 const md: MarkdownIt = new MarkdownIt()
 @customElement('page-challenge')
@@ -35,12 +34,15 @@ export class PageChallenge extends Page {
   @property({ type: Object }) category?: Category
   @property({ type: Object }) card?: Card
   @property({ type: Boolean }) openDescriptionCard: boolean = false
-  @property({ type: Object }) footerContent?: FooterButtonContent
+  @property({ type: Object }) footerContent?: FooterButtonContent = {
+    type: FooterTypes.Button,
+    buttons: [this.guessButton],
+  }
 
   @property({ type: Number }) score: number = 0
 
   @property({ type: Number }) level: number = 1
-  @property({ type: Number }) goalLevel: number = 30
+  @property({ type: Number }) goalLevel: number = 20
 
   static get styles(): CSSResult[] {
     return [
@@ -118,14 +120,14 @@ export class PageChallenge extends Page {
       <div class="dashboard">
         <div class="inner-board">
           <mwc-icon>school</mwc-icon>
-          <progress-bar .rate="${Number((((this.level - 1) / this.goalLevel) * 100).toFixed())}"></progressive-bar>
+          <progress-bar .rate="${Number((((this.level - 1) / this.goalLevel) * 100).toFixed())}"></progress-bar>
         </div>
 
         <div class="inner-board">
           <mwc-icon>fact_check</mwc-icon>
           <span class="label">Score</span>
           <span class="value">${this.score ? '+' : ''}${this.score}</span>
-        </div>        
+        </div>
       </div>
 
       <div class="top-part card">
@@ -224,17 +226,30 @@ export class PageChallenge extends Page {
 
     if (passRate >= 90) {
       new DailyChallengeEntity().save({
-        date: Date.now(),
         rate: passRate,
         passed: true,
       })
+
+      showToast({
+        type: ToastMessageTypes.Info,
+        subtitle: `Congraturation!`,
+        message: `You've passed Daily Challenge!`,
+      })
     } else {
       new DailyChallengeEntity().save({
-        date: Date.now(),
         rate: passRate,
         passed: false,
       })
+
+      showToast({
+        type: ToastMessageTypes.Warn,
+        subtitle: `Cheer up!`,
+        message: `You've failed Daily Challenge...`,
+      })
     }
+
+    this.level = 1
+    new Router().navigate('Brain Indexing', '')
   }
 
   private async showRemainNumber(remainNumber: number): Promise<void> {

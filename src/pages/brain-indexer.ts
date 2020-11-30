@@ -46,6 +46,7 @@ export class BrainIndexer extends LitElement {
         <page-training></page-training>
         <page-challenge></page-challenge>
         <page-statistics></page-statistics>
+        <page-settings></page-settings>
         <page-404></page-404>
       </layout-content>
 

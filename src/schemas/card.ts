@@ -37,6 +37,22 @@ export const cardSchema: Schema = {
 export class CardEntity extends TransactionHelper<Card> {
   protected schema: Schema = cardSchema
 
+  protected async afterRead(data: Card | Card[]): Promise<Card | Card[]> {
+    if (Array.isArray(data)) {
+      debugger
+      data.sort((a: Card, b: Card) => {
+        if (a.name && b.name) {
+          if (a.name > b.name) return 1
+          if (a.name < b.name) return -1
+          return 0
+        } else {
+          return 0
+        }
+      })
+    }
+    return data
+  }
+
   protected async afterSave(createdKey: number): Promise<Card> {
     const card: Card = await this.findOne(createdKey)
     const categoryId: number = card.category as number

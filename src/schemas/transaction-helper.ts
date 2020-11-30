@@ -81,7 +81,7 @@ export abstract class TransactionHelper<T> extends CRUDHooks<T> {
         objectStore = await this.getObejctStore('readonly')
       }
       const request: IDBRequest = objectStore.getAll()
-      const data: T[] = await this.commonResultHandler(request)
+      let data: T[] = await this.commonResultHandler(request)
 
       if (this.schema.indexes.some((idx: Index) => idx.reference)) {
         for (let idx of this.schema.indexes) {
@@ -107,6 +107,7 @@ export abstract class TransactionHelper<T> extends CRUDHooks<T> {
         }
       }
 
+      data = (await this.afterRead(data)) as T[]
       return data
     } catch (e) {
       throw e

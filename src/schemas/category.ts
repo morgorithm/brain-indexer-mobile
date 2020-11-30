@@ -28,7 +28,23 @@ export const categorySchema: Schema = {
 export class CategoryEntity extends TransactionHelper<Category> {
   protected schema: Schema = categorySchema
 
-  protected async beforeDelete(key: number) {
+  protected async afterRead(data: Category | Category[]): Promise<Category | Category[]> {
+    if (Array.isArray(data)) {
+      data.sort((a: Category, b: Category) => {
+        if (a.name && b.name) {
+          if (a.name > b.name) return 1
+          if (a.name < b.name) return -1
+          return 0
+        } else {
+          return 0
+        }
+      })
+    }
+
+    return data
+  }
+
+  protected async beforeDelete(key: number): Promise<void> {
     const category: Category = await this.findOne(key)
     if (category.itemCnt) {
       throw new Error(`it's being referenced by ${category.itemCnt} number of cards`)

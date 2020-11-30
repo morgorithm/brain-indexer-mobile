@@ -1,12 +1,13 @@
 import { Button, ButtonTypes } from '../components/button-bar'
 import { CSSResult, TemplateResult, css, customElement, html, property } from 'lit-element'
-import { Category, CategoryEntity } from '../schemas'
+import { Category, CategoryEntity, DailyChallenge, DailyChallengeEntity } from '../schemas'
 import { FooterButtonContent, FooterTypes } from '../layouts/layout-footer'
 import { ListFieldSet, SimpleDataList } from '../components/simple-data-list'
 
 import { Page } from './page'
 import { Router } from '../utils'
 import { pageCommonStyle } from '../assets/styles/page-common-style'
+import { showToast } from '../components/toast-message'
 
 @customElement('page-home')
 export class PageHome extends Page {
@@ -26,10 +27,7 @@ export class PageHome extends Page {
   @property({ type: Array }) data: Record<string, any>[] = []
   @property({ type: Array }) selectedData: Record<string, any>[] = []
 
-  @property({ type: Object }) footerContent?: FooterButtonContent = {
-    type: FooterTypes.Button,
-    buttons: [this.challengeButton],
-  }
+  @property({ type: Object }) footerContent?: FooterButtonContent
 
   static get styles(): CSSResult[] {
     return [pageCommonStyle]
@@ -58,7 +56,16 @@ export class PageHome extends Page {
   }
 
   async pageActivated(): Promise<void> {
+    this.footerContent = {
+      type: FooterTypes.Button,
+      buttons: (await new DailyChallengeEntity().checkTodayChallenge()) ? [] : [this.challengeButton],
+    }
+    this.dispatchFooterRendering()
     await this.fetchCategories()
+  }
+
+  async checkTodayChallenge(): Promise<boolean> {
+    return await new DailyChallengeEntity().checkTodayChallenge()
   }
 
   async fetchCategories(): Promise<void> {
@@ -73,11 +80,12 @@ export class PageHome extends Page {
       })
   }
 
-  selectedItemChanged(): void {
+  async selectedItemChanged(): Promise<void> {
     const selectedCategories: Record<string, any>[] = this.dataList?.selectedData || []
+
     this.footerContent = {
       type: FooterTypes.Button,
-      buttons: [this.challengeButton],
+      buttons: (await new DailyChallengeEntity().checkTodayChallenge()) ? [] : [this.challengeButton],
     }
 
     if (selectedCategories.length) {
