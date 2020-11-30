@@ -41,10 +41,6 @@ export class Page extends LitElement implements PageInfo {
         this.activated()
       }
     })
-
-    if (this.route === location.pathname.replace(/^\//, '')) {
-      new Router().navigate(this.title, this.route, this.params)
-    }
   }
 
   get info(): PageInfo {
@@ -62,7 +58,6 @@ export class Page extends LitElement implements PageInfo {
 
   showPage(): void {
     this.show = true
-    this.activated()
   }
 
   hidePage(): void {

@@ -1,6 +1,8 @@
+import '../components/progress-bar'
+
 import { Button, ButtonTypes } from '../components/button-bar'
 import { CSSResult, PropertyValues, TemplateResult, css, customElement, html, property } from 'lit-element'
-import { Card, CardEntity, Category } from '../schemas'
+import { Card, CardEntity, Category, DailyChallengeEntity } from '../schemas'
 import { FooterButtonContent, FooterTypes } from '../layouts/layout-footer'
 import { ToastMessageTypes, showToast } from '../components/toast-message'
 
@@ -38,7 +40,7 @@ export class PageChallenge extends Page {
   @property({ type: Number }) score: number = 0
 
   @property({ type: Number }) level: number = 1
-  @property({ type: Number }) goalLevel: number = 11
+  @property({ type: Number }) goalLevel: number = 30
 
   static get styles(): CSSResult[] {
     return [
@@ -68,12 +70,15 @@ export class PageChallenge extends Page {
         .inner-board span.label {
           font-weight: bold;
           color: var(--theme-dark-color);
-          margin: auto var(--theme-wide-spacing, 10px);
+          margin: auto 0;
         }
         .inner-board span.value {
           font-weight: bolder;
           color: var(--theme-darker-color);
           margin: auto var(--theme-common-spacing, 5px) auto auto;
+        }
+        .inner-board progress-bar {
+          flex: 1;
         }
         .card {
           border-radius: var(--theme-common-radius, 5px);
@@ -113,15 +118,14 @@ export class PageChallenge extends Page {
       <div class="dashboard">
         <div class="inner-board">
           <mwc-icon>school</mwc-icon>
-          <span class="label">Lv.</span>
-          <span class="value">${this.level}</span>
+          <progress-bar .rate="${Number((((this.level - 1) / this.goalLevel) * 100).toFixed())}"></progressive-bar>
         </div>
 
         <div class="inner-board">
           <mwc-icon>fact_check</mwc-icon>
           <span class="label">Score</span>
           <span class="value">${this.score ? '+' : ''}${this.score}</span>
-        </div>
+        </div>        
       </div>
 
       <div class="top-part card">
@@ -219,9 +223,17 @@ export class PageChallenge extends Page {
     const passRate: number = Number(((this.score / this.goalLevel) * 100).toFixed())
 
     if (passRate >= 90) {
-      console.log('passed')
+      new DailyChallengeEntity().save({
+        date: Date.now(),
+        rate: passRate,
+        passed: true,
+      })
     } else {
-      console.log('failed')
+      new DailyChallengeEntity().save({
+        date: Date.now(),
+        rate: passRate,
+        passed: false,
+      })
     }
   }
 
@@ -240,10 +252,28 @@ export class PageChallenge extends Page {
         }, 3500)
       })
     } else {
-      showToast({
-        type: ToastMessageTypes.Info,
-        message: `${remainNumber} cards left to go!`,
-      })
+      switch (remainNumber) {
+        case 10:
+          showToast({
+            type: ToastMessageTypes.Info,
+            message: `Cheer up! ${remainNumber} cards left to go!`,
+          })
+          break
+
+        case 5:
+          showToast({
+            type: ToastMessageTypes.Info,
+            message: `Almost there only ${remainNumber} cards left to go!`,
+          })
+          break
+
+        case 1:
+          showToast({
+            type: ToastMessageTypes.Info,
+            message: `Last one!`,
+          })
+          break
+      }
     }
   }
 }

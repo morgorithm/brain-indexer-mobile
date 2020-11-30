@@ -75,6 +75,11 @@ export class PageHome extends Page {
 
   selectedItemChanged(): void {
     const selectedCategories: Record<string, any>[] = this.dataList?.selectedData || []
+    this.footerContent = {
+      type: FooterTypes.Button,
+      buttons: [this.challengeButton],
+    }
+
     if (selectedCategories.length) {
       const categoryIds: number[] = selectedCategories.map((category: Record<string, any>) => category.id)
       this.footerContent?.buttons.push({
@@ -83,11 +88,6 @@ export class PageHome extends Page {
         icon: 'school',
         action: () => new Router().navigate('Training', `training`, { categoryIds }),
       })
-    } else {
-      this.footerContent = {
-        type: FooterTypes.Button,
-        buttons: [this.challengeButton],
-      }
     }
 
     this.dispatchFooterRendering()

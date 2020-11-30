@@ -8,14 +8,14 @@ export class Statistic {
   public category: Category | number
   public card: Card | number
   public passed: boolean
-  public storedAt?: Date
+  public storedAt?: number
 
   constructor({ id, category, card, passed, storedAt }: Statistic) {
     if (id) this.id = Number(id)
     this.category = category instanceof Category ? category : Number(category)
     this.card = card instanceof Card ? card : Number(card)
     this.passed = Boolean(passed)
-    this.storedAt = storedAt || new Date()
+    this.storedAt = storedAt || Date.now()
   }
 }
 
@@ -45,4 +45,9 @@ export const statisticSchema: Schema = {
 
 export class StatisticEntity extends TransactionHelper<Statistic> {
   protected schema: Schema = statisticSchema
+
+  protected async beforeSave(data: Statistic): Promise<Statistic> {
+    data.storedAt = data.storedAt || Date.now()
+    return data
+  }
 }
