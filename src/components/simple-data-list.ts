@@ -143,15 +143,15 @@ export class SimpleDataList extends LitElement {
     const selectable: boolean = this.selectable || false
     let data: Record<string, any>[] = this.data || []
 
-    if (fillterable && this.filterKeyword.length > 0) {
-      const { keyField }: ListFieldSet = fieldSet
-      data = data.filter(
-        (data: Record<string, any>) => data[keyField.name].toLowerCase().indexOf(this.filterKeyword.toLowerCase()) >= 0
-      )
-    }
-
     const { name, icon, displayModifier: keyFieldDisplayModifier }: ListField = fieldSet.keyField
     const detailFields: ListField[] = fieldSet.detailFields || []
+
+    if (fillterable && this.filterKeyword.length > 0) {
+      data = data.filter((item: Record<string, any>) => {
+        const keyFieldValue: any = (keyFieldDisplayModifier && keyFieldDisplayModifier(item)) || item[name]
+        return keyFieldValue.toLowerCase().indexOf(this.filterKeyword.toLowerCase()) >= 0
+      })
+    }
 
     return html`
       <div class="list-header">

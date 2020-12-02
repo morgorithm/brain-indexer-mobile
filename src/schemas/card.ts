@@ -39,7 +39,6 @@ export class CardEntity extends TransactionHelper<Card> {
 
   protected async afterRead(data: Card | Card[]): Promise<Card | Card[]> {
     if (Array.isArray(data)) {
-      debugger
       data.sort((a: Card, b: Card) => {
         if (a.name && b.name) {
           if (a.name > b.name) return 1
