@@ -2,7 +2,7 @@ import { css, CSSResult, customElement, html, TemplateResult } from 'lit-element
 import { commonStyle } from '../assets/styles/common-style'
 import { pageCommonStyle } from '../assets/styles/page-common-style'
 import { showToast, ToastMessageTypes } from '../components/toast-message'
-import { DailyChallengeEntity, StatisticEntity } from '../schemas'
+import { Card, CardEntity, Category, CategoryEntity, DailyChallengeEntity, StatisticEntity } from '../schemas'
 import { Page } from './page'
 
 @customElement('page-settings')
@@ -56,6 +56,20 @@ export class PageSettings extends Page {
           <mwc-icon>delete_forever</mwc-icon><span>Clear</span>
         </button>
       </div>
+
+      <div class="single-row">
+        <label>Export Data</label>
+        <button class="positive" @click="${this.exportData}">
+          <mwc-icon>import_export</mwc-icon><span>Export</span>
+        </button>
+      </div>
+
+      <div class="single-row">
+        <label>Import Data</label>
+        <button class="positive" @click="${this.importData}">
+          <mwc-icon>import_export</mwc-icon><span>Import</span>
+        </button>
+      </div>
     </div>`
   }
 
@@ -73,5 +87,21 @@ export class PageSettings extends Page {
       type: ToastMessageTypes.Info,
       message: 'Daily Achivement has been cleared successfully.',
     })
+  }
+
+  private async exportData(): Promise<void> {
+    let cards: Card[] = await new CardEntity().find()
+
+    cards = cards.map((card: Card) => {
+      delete (card.category as Category).id
+      delete card.id
+      return card
+    })
+
+    console.log('TODO: Export data')
+  }
+
+  private async importData(): Promise<void> {
+    console.log('TODO: Import data')
   }
 }
