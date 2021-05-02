@@ -78,6 +78,9 @@ export class PageHome extends Page {
           nameAndCount: `${category.name} (${category.itemCnt || 0})`,
         }
       })
+
+    debugger
+    this.selectedItemChanged()
   }
 
   async selectedItemChanged(): Promise<void> {
